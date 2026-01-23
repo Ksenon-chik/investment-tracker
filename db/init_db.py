@@ -1,5 +1,6 @@
 from db.base import Base
 from db.session import engine
+
 from models.user import User
 from models.deal import Deal
 
