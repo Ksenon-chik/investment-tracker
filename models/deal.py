@@ -16,7 +16,7 @@ class Deal(Base):
     __tablename__ = 'deals'
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey('users_id'), nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     date = Column(Date, nullable=False)
     asset = Column(String, nullable=False)
     direction = Column(String, nullable=False)
