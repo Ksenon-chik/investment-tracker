@@ -21,3 +21,6 @@ def create_deal(
     db.refresh(deal)
 
     return deal
+
+def get_user_deals(db: Session, user_id: int) -> list[Deal]:
+    return db.query(Deal).filter(Deal.user_id == user_id).all()
