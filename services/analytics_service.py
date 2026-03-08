@@ -40,24 +40,13 @@ def calculate_profit(db: Session, user_id: int):
         "profit": profit
     }
 
-def calculate_profit(db: Session, user_id: int):
-    deals = get_user_deals(db, user_id)
-
-    total_buy = 0
-    total_sell = 0
-
-    for deal in deals:
-        value = deal.amount * deal.price
-
-        if deal.deal_type == "buy":
-            total_buy += value
-        elif deal.deal_type == "sell":
-            total_sell += value
-
-    profit = total_sell - total_buy
+def get_user_summary(db: Session, user_id: int):
+    portfolio = calculate_portfolio(db, user_id)
+    profit_data = calculate_profit(db, user_id)
 
     return {
-        "total_buy": total_buy,
-        "total_sell": total_sell,
-        "profit": profit
+        "portfolio": portfolio,
+        "total_invested": profit_data["total_buy"],
+        "total_returned": profit_data["total_sell"],
+        "profit": profit_data["profit"]
     }
