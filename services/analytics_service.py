@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from models.deal import Deal
-from services.deal import get_user_deals
+from deal_service import get_user_deals
 
 def calculate_portfolio(db: Session, user_id: int):
     deals = get_user_deals(db, user_id)
