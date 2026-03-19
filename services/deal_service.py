@@ -10,10 +10,15 @@ def create_deal(
 ) -> Deal:
     deal = Deal(
         user_id=user_id,
+        date=deal_data.date,
         asset=deal_data.asset,
+        direction=deal_data.direction,
+        result=deal_data.result,
         amount=deal_data.amount,
-        price=deal_data.price,
-        deal_type=deal_data.deal_type
+        rr_ratio=deal_data.rr_ratio,
+        comment=deal_data.comment,
+        timeframe=deal_data.timeframe,
+        price=deal_data.price
     )
 
     db.add(deal)

@@ -2,13 +2,20 @@ from pydantic import BaseModel
 from datetime import datetime
 
 class DealBase(BaseModel):
+    date: datetime
     asset: str
+    direction: str
+    result: str
     amount: float
     price: float
-    deal_type: str
+    rr_ratio: float | None = None
+    comment: str | None = None
+    timeframe: str | None = None
+
 
 class DealCreate(DealBase):
     pass
+
 
 class DealRead(DealBase):
     id: int

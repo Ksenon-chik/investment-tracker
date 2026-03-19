@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, Boolean, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from db.base import Base
+from .deal import Deal
 
 
 class User(Base):

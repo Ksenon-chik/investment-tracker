@@ -8,7 +8,7 @@ from sqlalchemy import(
     ForeignKey
 )
 from sqlalchemy.orm import relationship
-from datetime import datetime
+from datetime import datetime, timezone
 
 from db.base import Base
 
@@ -25,5 +25,6 @@ class Deal(Base):
     rr_ratio = Column(Float, nullable=True)
     comment = Column(String, nullable=True)
     timeframe = Column(String, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    price = Column(Float, nullable=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     user = relationship("User", back_populates="deals")
