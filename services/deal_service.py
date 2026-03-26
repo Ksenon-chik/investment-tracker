@@ -27,5 +27,20 @@ def create_deal(
 
     return deal
 
+
+def delete_deal(db: Session, deal_id: int, user_id: int):
+    deal = db.query(Deal).filter(
+        Deal.id == deal_id,
+        Deal.user_id == user_id
+    ).first()
+
+    if not deal:
+        return None
+    db.delete(deal)
+    db.commit()
+
+    return deal
+
+
 def get_user_deals(db: Session, user_id: int) -> list[Deal]:
     return db.query(Deal).filter(Deal.user_id == user_id).all()

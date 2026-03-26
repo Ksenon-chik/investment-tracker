@@ -7,19 +7,17 @@ from db.session import get_db
 from models.user import User
 from utils.security import SECRET_KEY, ALGORITHM
 
-oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl="auth/login",
-    scheme_name="JWT"
-)
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 
 def get_current_user(
-    token: str,
-    db: Session
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db)
 ):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id = int(payload.get("sub"))
+        user_id: int = int(payload.get("sub"))
+
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
