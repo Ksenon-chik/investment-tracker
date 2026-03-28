@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from db.session import get_db
 from schemas.deal import DealCreate, DealRead
-from services.deal_service import create_deal, get_user_deals, delete_deal
+from services.deal_service import create_deal, get_user_deals, delete_deal, update_deal
 from utils.dependencies import get_current_user
 
 router = APIRouter(
@@ -42,3 +42,18 @@ def delete_deal_endpoint(
         raise HTTPException(status_code=404, detail="Deal not found")
 
     return {"message": "Deal deleted"}
+
+
+@router.put("/{deal_id}", response_model=DealRead)
+def update_deal_endpoint(
+    deal_id: int,
+    deal: DealCreate,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    updated = update_deal(db, deal_id, current_user.id, deal)
+
+    if not updated:
+        raise HTTPException(status_code=404, detail="Deal not found")
+    
+    return updated

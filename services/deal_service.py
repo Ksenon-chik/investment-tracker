@@ -36,8 +36,34 @@ def delete_deal(db: Session, deal_id: int, user_id: int):
 
     if not deal:
         return None
+    
     db.delete(deal)
     db.commit()
+
+    return deal
+
+
+def update_deal(db: Session, deal_id: int, user_id: int, deal_data: DealCreate):
+    deal = db.query(Deal).filter(
+        Deal.id == deal_id,
+        Deal.user_id == user_id
+    ).first()
+
+    if not deal:
+        return None
+    
+    deal.asset = deal_data.asset
+    deal.amount = deal_data.amount
+    deal.price = deal_data.price
+    deal.direction = deal_data.direction
+    deal.result = deal_data.result
+    deal.rr_ratio = deal_data.rr_ratio
+    deal.comment = deal_data.comment
+    deal.timeframe = deal_data.timeframe
+    deal.date = deal_data.date
+
+    db.commit()
+    db.refresh(deal)
 
     return deal
 
