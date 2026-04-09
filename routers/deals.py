@@ -24,10 +24,20 @@ def create_new_deal(
 
 @router.get("/", response_model=List[DealRead])
 def get_deals(
+    asset: str = None,
+    result: str = None,
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
-    return get_user_deals(db, current_user.id)
+    deals = get_user_deals(db, current_user.id)
+
+    if asset:
+        deals = [d for d in deals if d.asset == asset]
+
+    if result:
+        deals = [d for d in deals if d.result == result]
+
+    return deals
 
 
 @router.delete("/{deal_id}")

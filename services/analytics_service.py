@@ -54,6 +54,8 @@ def get_user_summary(db: Session, user_id: int):
 def get_full_analytics(db: Session, user_id: int):
     deals = get_user_deals(db, user_id)
 
+    deals = sorted(deals, key=lambda x: x.date)
+
     total_trades = len(deals)
     total_profit = 0
     total_loss = 0
