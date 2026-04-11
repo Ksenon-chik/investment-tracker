@@ -6,6 +6,11 @@ from utils.security import verify_password
 
 
 def create_user(db: Session, user_data: UserCreate) -> User:
+    existing_user = db.query(User).filter(User.email == user_data.email).first()
+
+    if existing_user:
+        raise ValueError("Пользователь с таким email уже существует")
+
     user = User(
         email = user_data.email,
         hashed_password = hash_password(user_data.password)

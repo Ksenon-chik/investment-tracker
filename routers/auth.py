@@ -1,6 +1,5 @@
-from fastapi import APIRouter, Depends # Группировка endpoints
+from fastapi import APIRouter, Depends, HTTPException # Группировка endpoints
 from sqlalchemy.orm import Session
-from fastapi import HTTPException
 from db.session import get_db
 from schemas.user import UserCreate, UserResponse, UserLogin
 from services.user_service import create_user, authenticate_user
@@ -15,12 +14,11 @@ router = APIRouter(
 
 
 @router.post("/register", response_model=UserResponse)
-def register_user(
-    user: UserCreate,
-    db: Session = Depends(get_db)
-):
-    new_user = create_user(db, user)
-    return new_user
+def register_user(user: UserCreate, db: Session = Depends(get_db)):
+    try:
+        return create_user(db, user)
+    except ValueError as e:
+        raise HTTPException(status_code=409, detail=str(e))
 
 @router.post("/login")
 def login(
