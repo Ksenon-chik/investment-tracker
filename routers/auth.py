@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException # Группировка endpoints
 from sqlalchemy.orm import Session
 from db.session import get_db
-from schemas.user import UserCreate, UserResponse, UserLogin
-from services.user_service import create_user, authenticate_user
+from schemas.user import UserCreate, UserResponse, UserLogin, ChangePassword
+from services.user_service import create_user, authenticate_user, change_password
 from utils.security import create_access_token
 from fastapi.security import OAuth2PasswordRequestForm
+from utils.dependencies import get_current_user
 
 
 router = APIRouter(
@@ -36,3 +37,25 @@ def login(
         "access_token": access_token,
         "token_type": "bearer"
     }
+
+from schemas.user import ChangePassword
+from services.user_service import change_password
+from utils.dependencies import get_current_user
+
+
+@router.post("/change-password")
+def change_user_password(
+    data: ChangePassword,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    try:
+        change_password(
+            db,
+            current_user.id,
+            data.old_password,
+            data.new_password
+        )
+        return {"message": "Пароль успешно изменен"}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
