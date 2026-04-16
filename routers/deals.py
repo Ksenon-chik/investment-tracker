@@ -1,69 +1,159 @@
-from typing import List
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, Form, Request
+from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
-
+from .auth import get_current_user
 from db.session import get_db
-from schemas.deal import DealCreate, DealRead
-from services.deal_service import create_deal, get_user_deals, delete_deal, update_deal
-from utils.dependencies import get_current_user
+from services.deal_service import get_user_deals, create_deal as create_deal_service
+from datetime import datetime
+from models.deal import Deal
+from utils.calculations import calculate_profit
 
 router = APIRouter(
     prefix="/deals",
     tags=["Deals"]
 )
 
+templates = Jinja2Templates(directory="templates")
 
-@router.post("/")
-def create_new_deal(
-    deal: DealCreate,
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+
+# Страница сделок
+@router.get("/", response_class=HTMLResponse)
+def deals_page(request: Request, db: Session = Depends(get_db)):
+    user_id = request.cookies.get("user_id")
+
+    if not user_id:
+        return RedirectResponse("/auth-page")
+
+    deals = get_user_deals(db, int(user_id))
+
+    return templates.TemplateResponse("deals.html", {
+        "request": request,
+        "deals": deals
+    })
+
+
+# Создание сделки (из формы)
+@router.post("/create")
+def create_deal(
+    request: Request,
+    asset: str = Form(...),
+    direction: str = Form(...),
+    amount: float = Form(...),
+    entry_price: float = Form(...),
+    exit_price: float = Form(...),
+    date: str = Form(...),
+    timeframe: str = Form(None),
+    comment: str = Form(None),
+    db: Session = Depends(get_db)
 ):
-    return create_deal(db, current_user.id, deal)
+    user_id = request.cookies.get("user_id")
+
+    if not user_id:
+        return RedirectResponse("/auth-page")
+
+    date_obj = datetime.strptime(date, "%Y-%m-%d").date()
+
+    profit = calculate_profit(direction, entry_price, exit_price, amount)
+
+    deal = Deal(
+        user_id=int(user_id),
+        asset=asset,
+        direction=direction,
+        amount=amount,
+        entry_price=entry_price,
+        exit_price=exit_price,
+        profit=profit,
+        timeframe=timeframe,
+        comment=comment,
+        date=date_obj
+    )
+
+    db.add(deal)
+    db.commit()
+
+    return RedirectResponse("/deals", status_code=302)
 
 
-@router.get("/", response_model=List[DealRead])
-def get_deals(
-    asset: str = None,
-    result: str = None,
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
-):
-    deals = get_user_deals(db, current_user.id)
-
-    if asset:
-        deals = [d for d in deals if d.asset == asset]
-
-    if result:
-        deals = [d for d in deals if d.result == result]
-
-    return deals
-
-
-@router.delete("/{deal_id}")
-def delete_deal_endpoint(
+# Удаление сделки
+@router.post("/delete/{deal_id}")
+def delete_deal(
+    request: Request,
     deal_id: int,
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    db: Session = Depends(get_db)
 ):
-    deal = delete_deal(db, deal_id, current_user.id)
+    user_id = request.cookies.get("user_id")
+
+    if not user_id:
+        return RedirectResponse("/auth-page")
+
+    from services.deal_service import delete_deal as delete_deal_service
+
+    delete_deal_service(db, deal_id, int(user_id))
+
+    return RedirectResponse("/deals", status_code=302)
+
+
+@router.post("/delete-selected")
+def delete_selected(
+    request: Request,
+    deal_id: int = Form(...),
+    db: Session = Depends(get_db)
+):
+    user_id = request.cookies.get("user_id")
+
+    if not user_id:
+        return RedirectResponse("/auth-page")
+
+    deal = db.query(Deal).filter(
+        Deal.id == deal_id,
+        Deal.user_id == int(user_id)
+    ).first()
+
+    if deal:
+        db.delete(deal)
+        db.commit()
+
+    return RedirectResponse("/deals", status_code=302)
+
+
+# Обновление сделки
+@router.post("/update/{deal_id}")
+def update_deal(
+    request: Request,
+    deal_id: int,
+    asset: str = Form(...),
+    direction: str = Form(...),
+    amount: float = Form(...),
+    entry_price: float = Form(...),
+    exit_price: float = Form(...),
+    date: str = Form(...),
+    timeframe: str = Form(None),
+    comment: str = Form(None),
+    db: Session = Depends(get_db)
+):
+    user_id = request.cookies.get("user_id")
+
+    deal = db.query(Deal).filter(
+        Deal.id == deal_id,
+        Deal.user_id == int(user_id)
+    ).first()
 
     if not deal:
-        raise HTTPException(status_code=404, detail="Deal not found")
+        return RedirectResponse("/deals")
 
-    return {"message": "Deal deleted"}
+    date_obj = datetime.strptime(date, "%Y-%m-%d").date()
 
+    deal.asset = asset
+    deal.direction = direction
+    deal.amount = amount
+    deal.entry_price = entry_price
+    deal.exit_price = exit_price
+    deal.timeframe = timeframe
+    deal.comment = comment
+    deal.date = date_obj
+    deal.profit = calculate_profit(direction, entry_price, exit_price, amount)
 
-@router.put("/{deal_id}", response_model=DealRead)
-def update_deal_endpoint(
-    deal_id: int,
-    deal: DealCreate,
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
-):
-    updated = update_deal(db, deal_id, current_user.id, deal)
+    db.commit()
 
-    if not updated:
-        raise HTTPException(status_code=404, detail="Deal not found")
-    
-    return updated
+    return RedirectResponse("/deals", status_code=302)

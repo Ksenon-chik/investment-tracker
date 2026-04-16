@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Трейдинг дневник</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #1e1e1e;
+            color: white;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 100vh;
+            padding: 0 80px;
+        }
+
+        .left {
+            max-width: 500px;
+        }
+
+        h1 {
+            font-size: 42px;
+            font-weight: bold;
+        }
+
+        p {
+            color: #aaa;
+            margin-top: 20px;
+        }
+
+        .buttons {
+            margin-top: 40px;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-right: 20px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-login {
+            border: 1px solid #888;
+            color: white;
+        }
+
+        .btn-register {
+            background: linear-gradient(90deg, #7b2ff7, #9b00ff);
+            color: white;
+        }
+
+        .right {
+            text-align: center;
+        }
+
+        .big-btn {
+            padding: 25px 80px;
+            border-radius: 40px;
+            font-size: 22px;
+            background: linear-gradient(90deg, #7b2ff7, #9b00ff);
+            color: white;
+            text-decoration: none;
+        }
+
+        .line {
+            height: 2px;
+            background: #7b2ff7;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="left">
+        <h1>ТВОЙ ЛИЧНЫЙ<br>ДНЕВНИК ТРЕЙДЕРА</h1>
+
+        <p>
+            Автоматический учёт, глубокая аналитика и контроль эмоций.<br>
+            Улучшай свои результаты каждый день
+        </p>
+
+        <div class="buttons">
+            <a href="/auth-page" class="btn btn-login">Вход</a>
+        </div>
+
+        <div class="line"></div>
+    </div>
+
+    <div class="right">
+        <a href="/auth-page" class="big-btn">Регистрация</a>
+        <div class="line"></div>
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Авторизация</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #1e1e1e;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .card {
+            width: 400px;
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid #7b2ff7;
+            background: #2a2a2a;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            border: none;
+            border-bottom: 1px solid #7b2ff7;
+            background: transparent;
+            color: white;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            margin-top: 30px;
+            border-radius: 25px;
+            border: none;
+            background: linear-gradient(90deg, #7b2ff7, #9b00ff);
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 1px solid #7b2ff7;
+            cursor: pointer;
+        }
+
+        .active {
+            background: linear-gradient(90deg, #7b2ff7, #9b00ff);
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+
+    <h2>Войти или создать аккаунт</h2>
+
+    <div class="tabs">
+        <div class="tab active" id="login-tab" onclick="showLogin()">Вход</div>
+        <div class="tab" id="register-tab" onclick="showRegister()">Регистрация</div>
+    </div>
+
+    <!-- Форма входа -->
+    <form id="login-form" method="post" action="/auth/login">
+        <input type="text" name="email" placeholder="Email">
+        <input type="password" name="password" placeholder="Пароль">
+        <button class="btn">Войти</button>
+    </form>
+
+    <!-- Форма регистрации -->
+    <form id="register-form" method="post" action="/auth/register" style="display: none;">
+        <input type="email" name="email" placeholder="Email">
+        <input type="password" name="password" placeholder="Пароль">
+        <button class="btn">Зарегистрироваться</button>
+    </form>
+
+</div>
+
+<script>
+function showLogin() {
+    document.getElementById("login-form").style.display = "block";
+    document.getElementById("register-form").style.display = "none";
+
+    document.getElementById("login-tab").classList.add("active");
+    document.getElementById("register-tab").classList.remove("active");
+}
+
+function showRegister() {
+    document.getElementById("login-form").style.display = "none";
+    document.getElementById("register-form").style.display = "block";
+
+    document.getElementById("login-tab").classList.remove("active");
+    document.getElementById("register-tab").classList.add("active");
+}
+</script>
+
+</body>
+</html>

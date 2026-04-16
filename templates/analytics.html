@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Аналитика</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #1e1e1e;
+    color: white;
+    display: flex;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 200px;
+    background: #2a2a2a;
+    height: 100vh;
+    padding: 20px;
+}
+
+.sidebar a {
+    display: block;
+    margin: 20px 0;
+    color: white;
+    text-decoration: none;
+}
+
+/* Main */
+.main {
+    flex: 1;
+    padding: 40px;
+}
+
+/* Grid layout */
+.layout {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 20px;
+}
+
+/* Left side */
+.left {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+/* Right side */
+.right {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Cards */
+.card {
+    border: 1px solid #7b2ff7;
+    border-radius: 15px;
+    padding: 20px;
+    background: #2a2a2a;
+}
+
+/* Chart fix */
+.chart-container {
+    position: relative;
+    height: 250px;
+}
+
+/* Doughnut */
+.doughnut-container {
+    position: relative;
+    height: 250px;
+}
+
+/* Titles */
+h3 {
+    margin-bottom: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="sidebar">
+    <a href="/profile">Профиль</a>
+    <a href="/deals">Сделки</a>
+    <a href="/analytics">Аналитика</a>
+</div>
+
+<div class="main">
+
+<h2>Сводная аналитика</h2>
+
+<div class="layout">
+
+<!-- LEFT -->
+<div class="left">
+
+    <!-- Stats -->
+    <div class="stats">
+        <div class="card">
+            <h3>Всего сделок</h3>
+            <p>{{ total_deals }}</p>
+        </div>
+
+        <div class="card">
+            <h3>Прибыль</h3>
+            <p>{{ total_profit }}</p>
+        </div>
+
+        <div class="card">
+            <h3>Убыток</h3>
+            <p>{{ total_loss }}</p>
+        </div>
+
+        <div class="card">
+            <h3>Winrate</h3>
+            <p>{{ winrate }}%</p>
+        </div>
+    </div>
+
+    <!-- Doughnut -->
+    <div class="card">
+        <h3>Активы</h3>
+        <div class="doughnut-container">
+            <canvas id="assetsChart"></canvas>
+        </div>
+    </div>
+
+</div>
+
+<!-- RIGHT -->
+<div class="right">
+
+    <!-- Profit chart -->
+    <div class="card">
+        <h3>График прибыли</h3>
+        <div class="chart-container">
+            <canvas id="profitChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Deals per day -->
+    <div class="card">
+        <h3>Сделки по дням</h3>
+        <div class="chart-container">
+            <canvas id="weekChart"></canvas>
+        </div>
+    </div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+const purple = "#7b2ff7";
+
+/* ===== PROFIT GRAPH ===== */
+const profitData = {{ chart_data | tojson }};
+const labels = profitData.map(d => d.date);
+const values = profitData.map(d => d.balance);
+
+new Chart(document.getElementById("profitChart"), {
+    type: "line",
+    data: {
+        labels: labels,
+        datasets: [{
+            label: "Капитал",
+            data: values,
+            borderColor: purple,
+            backgroundColor: "rgba(123,47,247,0.2)",
+            tension: 0.4,
+            fill: true,
+            pointRadius: 4,
+            pointHoverRadius: 6
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+            mode: "index",
+            intersect: false
+        },
+        plugins: {
+            legend: { display: false }
+        },
+        scales: {
+            x: { ticks: { color: "white" } },
+            y: { ticks: { color: "white" } }
+        }
+    }
+});
+
+
+/* ===== ASSETS CHART ===== */
+const assetsData = {{ assets_data | tojson }};
+
+new Chart(document.getElementById("assetsChart"), {
+    type: "doughnut",
+    data: {
+        labels: Object.keys(assetsData),
+        datasets: [{
+            data: Object.values(assetsData),
+            backgroundColor: [
+                "#7b2ff7",
+                "#9b00ff",
+                "#5a1fd7",
+                "#3b0ca3"
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                labels: { color: "white" }
+            }
+        }
+    }
+});
+
+
+/* ===== WEEK CHART ===== */
+const weekData = {{ week_data | tojson }};
+
+new Chart(document.getElementById("weekChart"), {
+    type: "bar",
+    data: {
+        labels: Object.keys(weekData),
+        datasets: [{
+            label: "Сделки",
+            data: Object.values(weekData),
+            backgroundColor: purple
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false }
+        },
+        scales: {
+            x: { ticks: { color: "white" } },
+            y: { ticks: { color: "white" } }
+        }
+    }
+});
+</script>
+
+</body>
+</html>

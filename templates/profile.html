@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Профиль</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: #1e1e1e;
+            color: white;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 200px;
+            background: #2a2a2a;
+            height: 100vh;
+            padding: 20px;
+        }
+
+        .sidebar a {
+            display: block;
+            margin: 20px 0;
+            color: white;
+            text-decoration: none;
+        }
+
+        .main {
+            flex: 1;
+            padding: 40px;
+        }
+
+        .card {
+            border: 1px solid #7b2ff7;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: #2a2a2a;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: none;
+            background: linear-gradient(90deg, #7b2ff7, #9b00ff);
+            color: white;
+            cursor: pointer;
+        }
+
+        .grid {
+            display: flex;
+            gap: 20px;
+        }
+
+        .chart-container {
+            height: 300px;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h3>📈</h3>
+    <a href="/profile">Профиль</a>
+    <a href="/deals">Сделки</a>
+    <a href="/analytics">Аналитика</a>
+</div>
+
+<div class="main">
+
+    <h2>Профиль пользователя</h2>
+
+    <div class="grid">
+
+        <!-- ЛИЧНЫЕ ДАННЫЕ -->
+        <div class="card" style="flex: 2;">
+            <h3>Личные данные</h3>
+            <p>Email: {{ user.email }}</p>
+            <p>ID: {{ user.id }}</p>
+
+            <!-- ФОРМА СМЕНЫ ПАРОЛЯ -->
+            <form method="post" action="/auth/change-password">
+                <input type="password" name="old_password" placeholder="Старый пароль">
+                <input type="password" name="new_password" placeholder="Новый пароль">
+                <button class="btn">Сменить пароль</button>
+            </form>
+        </div>
+
+        <!-- КАПИТАЛ -->
+        <div class="card" style="flex: 1;">
+            <h3>Общий капитал</h3>
+            <h2>{{ total_capital }}</h2>
+        </div>
+
+    </div>
+
+    <!-- ГРАФИК -->
+    <div class="card">
+        <h3>График доходности</h3>
+
+        <div class="chart-container">
+            <canvas id="chart"></canvas>
+        </div>
+    </div>
+
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+const rawData = {{ chart_data | tojson }};
+
+const labels = rawData.length ? rawData.map(d => d.date) : [];
+const values = rawData.length ? rawData.map(d => d.balance) : [];
+
+const ctx = document.getElementById("chart");
+
+if (ctx) {
+    new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Капитал",
+                data: values,
+
+                // стиль
+                borderColor: "#9b00ff",        // фиолетовая линия
+                backgroundColor: "rgba(155, 0, 255, 0.1)",
+                borderWidth: 2,
+                pointRadius: 3,
+                pointHoverRadius: 6,
+                tension: 0.4,                  // плавность линии
+                fill: true
+            }]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            interaction: {
+                mode: "index",
+                intersect: false
+            },
+
+            plugins: {
+                legend: {
+                    labels: {
+                        color: "white"
+                    }
+                },
+                tooltip: {
+                    enabled: true,
+                    backgroundColor: "#2a2a2a",
+                    titleColor: "#fff",
+                    bodyColor: "#fff",
+                    borderColor: "#9b00ff",
+                    borderWidth: 1,
+                    padding: 10,
+                    displayColors: false,
+                    callbacks: {
+                        label: function(context) {
+                            return "Капитал: " + context.raw;
+                        }
+                    }
+                }
+            },
+
+            scales: {
+                x: {
+                    ticks: {
+                        color: "#aaa"
+                    },
+                    grid: {
+                        color: "#333"
+                    }
+                },
+                y: {
+                    ticks: {
+                        color: "#aaa"
+                    },
+                    grid: {
+                        color: "#333"
+                    }
+                }
+            }
+        }
+    });
+}
+</script>
+
+</body>
+</html>
