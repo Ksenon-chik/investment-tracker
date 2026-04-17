@@ -1,5 +1,4 @@
 from collections import defaultdict
-from datetime import datetime
 
 
 def calculate_stats(deals):
@@ -8,13 +7,23 @@ def calculate_stats(deals):
     profit = 0
     loss = 0
     win_count = 0
+    valid_trades = 0
 
     for d in deals:
-        # прибыль/убыток
-        if d.direction in ["buy", "long"]:
-            pnl = (d.exit_price - d.entry_price) * d.amount
+        entry = getattr(d, "entry_price", None)
+        exit_ = getattr(d, "exit_price", None)
+        direction = getattr(d, "direction", None)
+        amount = getattr(d, "amount", 0) or 0
+
+        if entry is None or exit_ is None or direction is None:
+            continue
+
+        valid_trades += 1
+
+        if direction in ["buy", "long"]:
+            pnl = (exit_ - entry) * amount
         else:
-            pnl = (d.entry_price - d.exit_price) * d.amount
+            pnl = (entry - exit_) * amount
 
         if pnl >= 0:
             profit += pnl
@@ -22,7 +31,7 @@ def calculate_stats(deals):
         else:
             loss += pnl
 
-    winrate = (win_count / total * 100) if total > 0 else 0
+    winrate = (win_count / valid_trades * 100) if valid_trades > 0 else 0
 
     return {
         "total": total,
@@ -37,8 +46,11 @@ def deals_by_day(deals):
     result = {day: 0 for day in days}
 
     for d in deals:
+        if not getattr(d, "date", None):
+            continue
         day = d.date.strftime("%a")
-        result[day] += 1
+        if day in result:
+            result[day] += 1
 
     return result
 
@@ -47,6 +59,40 @@ def asset_distribution(deals):
     result = defaultdict(int)
 
     for d in deals:
-        result[d.asset] += 1
+        asset = getattr(d, "asset", "Unknown")
+        result[asset] += 1
 
     return dict(result)
+
+
+def equity_curve(deals):
+    balance = 0
+    chart = []
+
+    sorted_deals = sorted(
+        [d for d in deals if getattr(d, "date", None)],
+        key=lambda x: x.date
+    )
+
+    for d in sorted_deals:
+        entry = getattr(d, "entry_price", None)
+        exit_ = getattr(d, "exit_price", None)
+        direction = getattr(d, "direction", None)
+        amount = getattr(d, "amount", 0) or 0
+
+        if entry is None or exit_ is None or direction is None:
+            continue
+
+        if direction in ["buy", "long"]:
+            pnl = (exit_ - entry) * amount
+        else:
+            pnl = (entry - exit_) * amount
+
+        balance += pnl
+
+        chart.append({
+            "date": d.date.strftime("%Y-%m-%d"),
+            "balance": round(balance, 2)
+        })
+
+    return chart
