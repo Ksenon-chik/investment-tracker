@@ -1,23 +1,18 @@
 from fastapi import APIRouter, Depends, Form, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
-from .auth import get_current_user
-from db.session import get_db
-from services.deal_service import get_user_deals, create_deal as create_deal_service
 from datetime import datetime
+
+from db.session import get_db
 from models.deal import Deal
+from services.deal_service import get_user_deals
 from utils.calculations import calculate_profit
 
-router = APIRouter(
-    prefix="/deals",
-    tags=["Deals"]
-)
-
+router = APIRouter(prefix="/deals", tags=["Deals"])
 templates = Jinja2Templates(directory="templates")
 
 
-# Страница сделок
 @router.get("/", response_class=HTMLResponse)
 def deals_page(request: Request, db: Session = Depends(get_db)):
     user_id = request.cookies.get("user_id")
@@ -33,77 +28,107 @@ def deals_page(request: Request, db: Session = Depends(get_db)):
     })
 
 
-# Создание сделки (из формы)
+from datetime import datetime
+from fastapi import Form, Depends, Request
+from fastapi.responses import RedirectResponse
+
 @router.post("/create")
 def create_deal(
     request: Request,
-    asset: str = Form(...),
-    direction: str = Form(...),
-    amount: float = Form(...),
-    entry_price: float = Form(...),
-    exit_price: float = Form(...),
-    date: str = Form(...),
-    timeframe: str = Form(None),
-    comment: str = Form(None),
+    asset: str = Form(""),
+    direction: str = Form(""),
+    amount: str = Form(""),
+    entry_price: str = Form(""),
+    exit_price: str = Form(""),
+    date: str = Form(""),
+    
+    timeframe: str = Form(""),   # optional
+    comment: str = Form(""),     # optional
     db: Session = Depends(get_db)
 ):
     user_id = request.cookies.get("user_id")
 
     if not user_id:
-        return RedirectResponse("/auth-page")
+        return RedirectResponse("/auth-page", status_code=303)
 
-    date_obj = datetime.strptime(date, "%Y-%m-%d").date()
+    # ✅ ПРОВЕРКА ПУСТЫХ ПОЛЕЙ (ТОЛЬКО ОБЯЗАТЕЛЬНЫЕ)
+    if not asset or not direction or not amount or not entry_price or not exit_price or not date:
+        return RedirectResponse(
+            "/deals?error=Заполни обязательные поля",
+            status_code=303
+        )
 
+    # ✅ ПРОВЕРКА ЧИСЕЛ
+    try:
+        amount = float(amount)
+        entry_price = float(entry_price)
+        exit_price = float(exit_price)
+    except:
+        return RedirectResponse(
+            "/deals?error=Числа введены неверно",
+            status_code=303
+        )
+
+    if amount <= 0:
+        return RedirectResponse(
+            "/deals?error=Объем должен быть больше 0",
+            status_code=303
+        )
+
+    if entry_price <= 0 or exit_price <= 0:
+        return RedirectResponse(
+            "/deals?error=Цена должна быть больше 0",
+            status_code=303
+        )
+
+    # ✅ ПРОВЕРКА ДАТЫ
+    try:
+        date_obj = datetime.strptime(date, "%Y-%m-%d").date()
+    except:
+        return RedirectResponse(
+            "/deals?error=Неверная дата",
+            status_code=303
+        )
+
+    # ✅ PROFIT
     profit = calculate_profit(direction, entry_price, exit_price, amount)
 
+    # ✅ СОЗДАНИЕ
     deal = Deal(
         user_id=int(user_id),
-        asset=asset,
+        asset=asset.strip(),
         direction=direction,
         amount=amount,
         entry_price=entry_price,
         exit_price=exit_price,
         profit=profit,
-        timeframe=timeframe,
-        comment=comment,
+        timeframe=timeframe.strip() if timeframe else None,  # optional
+        comment=comment.strip() if comment else None,        # optional
         date=date_obj
     )
 
     db.add(deal)
     db.commit()
 
-    return RedirectResponse("/deals", status_code=302)
-
-
-# Удаление сделки
-@router.post("/delete/{deal_id}")
-def delete_deal(
-    request: Request,
-    deal_id: int,
-    db: Session = Depends(get_db)
-):
-    user_id = request.cookies.get("user_id")
-
-    if not user_id:
-        return RedirectResponse("/auth-page")
-
-    from services.deal_service import delete_deal as delete_deal_service
-
-    delete_deal_service(db, deal_id, int(user_id))
-
-    return RedirectResponse("/deals", status_code=302)
+    return RedirectResponse("/deals", status_code=303)
 
 
 @router.post("/delete-selected")
 def delete_selected(
     request: Request,
-    deal_id: int = Form(...),
+    deal_id: int = Form(None),
     db: Session = Depends(get_db)
 ):
     user_id = request.cookies.get("user_id")
 
     if not user_id:
         return RedirectResponse("/auth-page")
+
+    if not deal_id:
+        return RedirectResponse(
+            "/deals?error=Выбери сделку",
+            status_code=303
+        )
 
     deal = db.query(Deal).filter(
         Deal.id == deal_id,
@@ -114,25 +139,27 @@ def delete_selected(
         db.delete(deal)
         db.commit()
 
-    return RedirectResponse("/deals", status_code=302)
+    return RedirectResponse("/deals", status_code=303)
 
 
-# Обновление сделки
 @router.post("/update/{deal_id}")
 def update_deal(
     request: Request,
     deal_id: int,
-    asset: str = Form(...),
-    direction: str = Form(...),
-    amount: float = Form(...),
-    entry_price: float = Form(...),
-    exit_price: float = Form(...),
-    date: str = Form(...),
+    asset: str = Form(None),
+    direction: str = Form(None),
+    amount: float = Form(None),
+    entry_price: float = Form(None),
+    exit_price: float = Form(None),
+    date: str = Form(None),
     timeframe: str = Form(None),
     comment: str = Form(None),
     db: Session = Depends(get_db)
 ):
     user_id = request.cookies.get("user_id")
+
+    if not user_id:
+        return RedirectResponse("/auth-page")
 
     deal = db.query(Deal).filter(
         Deal.id == deal_id,
@@ -142,18 +169,22 @@ def update_deal(
     if not deal:
         return RedirectResponse("/deals")
 
-    date_obj = datetime.strptime(date, "%Y-%m-%d").date()
+    if not all([asset, direction, amount, entry_price, exit_price, date]):
+        return RedirectResponse(
+            "/deals?error=Заполни все поля",
+            status_code=303
+        )
 
     deal.asset = asset
     deal.direction = direction
     deal.amount = amount
     deal.entry_price = entry_price
     deal.exit_price = exit_price
+    deal.date = datetime.strptime(date, "%Y-%m-%d").date()
     deal.timeframe = timeframe
     deal.comment = comment
-    deal.date = date_obj
     deal.profit = calculate_profit(direction, entry_price, exit_price, amount)
 
     db.commit()
 
-    return RedirectResponse("/deals", status_code=302)
+    return RedirectResponse("/deals", status_code=303)

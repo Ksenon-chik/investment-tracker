@@ -1,117 +1,166 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>Авторизация</title>
+<meta charset="UTF-8">
+<title>Авторизация</title>
 
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #1e1e1e;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #1e1e1e;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
 
-        .card {
-            width: 400px;
-            padding: 40px;
-            border-radius: 20px;
-            border: 1px solid #7b2ff7;
-            background: #2a2a2a;
-        }
+.card {
+    width: 400px;
+    padding: 40px;
+    border-radius: 20px;
+    border: 1px solid #7b2ff7;
+    background: #2a2a2a;
+}
 
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+.tabs {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
 
-        input {
-            width: 100%;
-            padding: 12px;
-            margin-top: 15px;
-            border: none;
-            border-bottom: 1px solid #7b2ff7;
-            background: transparent;
-            color: white;
-        }
+.tab {
+    padding: 10px 20px;
+    border-radius: 20px;
+    border: 1px solid #7b2ff7;
+    cursor: pointer;
+    text-align: center;
+    flex: 1;
+}
 
-        .btn {
-            width: 100%;
-            padding: 15px;
-            margin-top: 30px;
-            border-radius: 25px;
-            border: none;
-            background: linear-gradient(90deg, #7b2ff7, #9b00ff);
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-        }
+.tab:first-child {
+    margin-right: 10px;
+}
 
-        .tabs {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
+.active {
+    background: linear-gradient(90deg, #7b2ff7, #9b00ff);
+}
 
-        .tab {
-            padding: 10px 20px;
-            border-radius: 20px;
-            border: 1px solid #7b2ff7;
-            cursor: pointer;
-        }
+input {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    border: none;
+    border-bottom: 1px solid #7b2ff7;
+    background: transparent;
+    color: white;
+}
 
-        .active {
-            background: linear-gradient(90deg, #7b2ff7, #9b00ff);
-        }
-    </style>
+.btn {
+    width: 100%;
+    padding: 15px;
+    margin-top: 25px;
+    border-radius: 25px;
+    border: none;
+    background: linear-gradient(90deg, #7b2ff7, #9b00ff);
+    color: white;
+    cursor: pointer;
+}
+
+.error {
+    color: red;
+    text-align: center;
+    margin-top: 10px;
+}
+</style>
 </head>
+
 <body>
 
 <div class="card">
 
-    <h2>Войти или создать аккаунт</h2>
+<h2 style="text-align:center;">Войти или создать аккаунт</h2>
 
-    <div class="tabs">
-        <div class="tab active" id="login-tab" onclick="showLogin()">Вход</div>
-        <div class="tab" id="register-tab" onclick="showRegister()">Регистрация</div>
-    </div>
+<div class="tabs">
+    <div class="tab active" id="login-tab" onclick="showLogin()">Вход</div>
+    <div class="tab" id="register-tab" onclick="showRegister()">Регистрация</div>
+</div>
 
-    <!-- Форма входа -->
-    <form id="login-form" method="post" action="/auth/login">
-        <input type="text" name="email" placeholder="Email">
-        <input type="password" name="password" placeholder="Пароль">
-        <button class="btn">Войти</button>
-    </form>
+<!-- ошибки -->
+{% if request.query_params.get("error") %}
+<p class="error">
+    {{ request.query_params.get("error") }}
+</p>
+{% endif %}
 
-    <!-- Форма регистрации -->
-    <form id="register-form" method="post" action="/auth/register" style="display: none;">
-        <input type="email" name="email" placeholder="Email">
-        <input type="password" name="password" placeholder="Пароль">
-        <button class="btn">Зарегистрироваться</button>
-    </form>
+<!-- LOGIN -->
+<form id="login-form" method="post" action="/auth/login-form">
+    <input name="email" placeholder="Email" required>
+    <input type="password" name="password" placeholder="Пароль" required>
+    <button class="btn">Войти</button>
+</form>
+
+<!-- REGISTER -->
+<form id="register-form" method="post" action="/auth/register" style="display:none;" onsubmit="return validateRegister()">
+    <input name="email" placeholder="Email" required>
+    <input type="password" id="reg-password" name="password" placeholder="Пароль" required>
+    <input type="password" id="reg-confirm" name="confirm_password" placeholder="Повтори пароль" required>
+    <button class="btn">Зарегистрироваться</button>
+</form>
 
 </div>
 
 <script>
-function showLogin() {
-    document.getElementById("login-form").style.display = "block";
-    document.getElementById("register-form").style.display = "none";
+const loginForm = document.getElementById("login-form");
+const registerForm = document.getElementById("register-form");
 
-    document.getElementById("login-tab").classList.add("active");
-    document.getElementById("register-tab").classList.remove("active");
+const loginTab = document.getElementById("login-tab");
+const registerTab = document.getElementById("register-tab");
+
+function showLogin() {
+    loginForm.style.display = "block";
+    registerForm.style.display = "none";
+
+    loginTab.classList.add("active");
+    registerTab.classList.remove("active");
 }
 
 function showRegister() {
-    document.getElementById("login-form").style.display = "none";
-    document.getElementById("register-form").style.display = "block";
+    loginForm.style.display = "none";
+    registerForm.style.display = "block";
 
-    document.getElementById("login-tab").classList.remove("active");
-    document.getElementById("register-tab").classList.add("active");
+    loginTab.classList.remove("active");
+    registerTab.classList.add("active");
 }
+
+// проверка паролей
+function validateRegister() {
+    const pass = document.getElementById("reg-password").value;
+    const confirm = document.getElementById("reg-confirm").value;
+
+    if (pass.length < 6) {
+        alert("Пароль должен быть минимум 6 символов");
+        return false;
+    }
+
+    if (pass !== confirm) {
+        alert("Пароли не совпадают");
+        return false;
+    }
+
+    return true;
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.get("mode") === "register") {
+        showRegister();
+    } else {
+        showLogin();
+    }
+});
 </script>
 
 </body>

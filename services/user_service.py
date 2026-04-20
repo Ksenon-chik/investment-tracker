@@ -50,8 +50,8 @@ def change_password(db: Session, user_id: int, old_password: str, new_password: 
         raise ValueError("Неверный старый пароль")
 
     # можно добавить валидацию нового пароля
-    if len(new_password) < 8:
-        raise ValueError("Пароль должен быть минимум 8 символов")
+    if len(new_password) < 6:
+        raise ValueError("Пароль должен быть минимум 6 символов")
 
     # обновляем пароль
     user.hashed_password = hash_password(new_password)

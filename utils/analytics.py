@@ -42,15 +42,14 @@ def calculate_stats(deals):
 
 
 def deals_by_day(deals):
-    days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    days = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"]
     result = {day: 0 for day in days}
 
-    for d in deals:
-        if not getattr(d, "date", None):
-            continue
-        day = d.date.strftime("%a")
-        if day in result:
-            result[day] += 1
+    for deal in deals:
+        day_index = deal.date.weekday()
+        day_name = days[day_index]
+
+        result[day_name] += 1
 
     return result
 

@@ -77,6 +77,18 @@
 
     <h2>Профиль пользователя</h2>
 
+    {% if request.query_params.get("error") %}
+    <p style="color:red;">
+        {{ request.query_params.get("error") }}
+    </p>
+    {% endif %}
+
+    {% if request.query_params.get("success") %}
+    <p style="color:lightgreen;">
+        {{ request.query_params.get("success") }}
+    </p>
+    {% endif %}
+
     <div class="grid">
 
         <!-- ЛИЧНЫЕ ДАННЫЕ -->
@@ -85,11 +97,24 @@
             <p>Email: {{ user.email }}</p>
             <p>ID: {{ user.id }}</p>
 
+            {% if request.query_params.get("error") %}
+                <div class="error">
+                    {{ request.query_params.get("error") }}
+                </div>
+            {% endif %}
+
+            {% if request.query_params.get("success") %}
+                <div class="success">
+                    {{ request.query_params.get("success") }}
+                </div>
+            {% endif %}
+            
             <!-- ФОРМА СМЕНЫ ПАРОЛЯ -->
             <form method="post" action="/auth/change-password">
-                <input type="password" name="old_password" placeholder="Старый пароль">
-                <input type="password" name="new_password" placeholder="Новый пароль">
-                <button class="btn">Сменить пароль</button>
+                <input type="password" name="old_password" placeholder="Старый пароль" required>
+                <input type="password" name="new_password" id="new-pass" placeholder="Новый пароль" required>
+                <input type="password" name="confirm_password" id="confirm-pass" placeholder="Повтори пароль" required>
+                <button>Сменить пароль</button>
             </form>
         </div>
 
@@ -114,6 +139,44 @@
 
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+
+document.getElementById("password-form").addEventListener("submit", function(e) {
+
+    const oldPass = document.getElementById("old-pass").value.trim();
+    const newPass = document.getElementById("new-pass").value.trim();
+    const confirm = document.getElementById("confirm-pass").value.trim();
+
+    // пустые поля
+    if (!oldPass || !newPass || !confirm) {
+        alert("Заполни все поля");
+        e.preventDefault();
+        return;
+    }
+
+    // длина
+    if (newPass.length < 6) {
+        alert("Пароль должен быть минимум 6 символов");
+        e.preventDefault();
+        return;
+    }
+
+    // совпадение
+    if (newPass !== confirm) {
+        alert("Пароли не совпадают");
+        e.preventDefault();
+        return;
+    }
+
+    // защита от одинакового пароля
+    if (oldPass === newPass) {
+        alert("Новый пароль должен отличаться от старого");
+        e.preventDefault();
+        return;
+    }
+});
+
+</script>
 
 <script>
 const rawData = {{ chart_data | tojson }};

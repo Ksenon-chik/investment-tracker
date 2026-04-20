@@ -235,19 +235,33 @@ new Chart(document.getElementById("assetsChart"), {
 });
 
 
-/* ===== WEEK CHART ===== */
 const weekData = {{ week_data | tojson }};
+
+// правильный порядок дней
+const orderedDays = [
+    "Пн",
+    "Вт",
+    "Ср",
+    "Чт",
+    "Пт",
+    "Сб",
+    "Вс"
+];
+
+// формируем данные в правильном порядке
+const orderedValues = orderedDays.map(day => weekData[day] || 0);
 
 new Chart(document.getElementById("weekChart"), {
     type: "bar",
     data: {
-        labels: Object.keys(weekData),
+        labels: orderedDays,
         datasets: [{
             label: "Сделки",
-            data: Object.values(weekData),
+            data: orderedValues,
             backgroundColor: purple
         }]
     },
+
     options: {
         responsive: true,
         maintainAspectRatio: false,

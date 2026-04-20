@@ -75,6 +75,13 @@ button {
     width: 100%;
 }
 
+/* ✅ ДОБАВИЛ СКРОЛЛ */
+.table-container {
+    max-height: 420px; /* примерно 8 строк */
+    overflow-y: auto;
+}
+
+/* таблица */
 table {
     width: 100%;
     margin-top: 15px;
@@ -89,6 +96,11 @@ th, td {
 tr:hover {
     background: #333;
     cursor: pointer;
+}
+
+/* ✅ подсветка выбранной сделки */
+.selected {
+    background: #444 !important;
 }
 </style>
 </head>
@@ -115,24 +127,25 @@ tr:hover {
 <h3>Создать сделку</h3>
 
 <form method="post" action="/deals/create">
-    <input name="asset" placeholder="Актив">
+    <input name="asset" id="asset" placeholder="Актив" required>
 
-    <select name="direction">
+    <select name="direction" id="direction" required>
+        <option value="">Выбери тип</option>
         <option value="buy">Buy</option>
         <option value="sell">Sell</option>
         <option value="long">Long</option>
         <option value="short">Short</option>
     </select>
 
-    <input name="amount" type="number" step="0.01" placeholder="Объем">
+    <input name="amount" id="amount" type="number" step="any" placeholder="Объем" required>
 
-    <input name="entry_price" type="number" step="0.01" placeholder="Цена входа">
-    <input name="exit_price" type="number" step="0.01" placeholder="Цена выхода">
+    <input name="entry_price" id="entry" type="number" step="any" placeholder="Цена входа" required>
+    <input name="exit_price" id="exit" type="number" step="any" placeholder="Цена выхода">
 
     <input name="timeframe" placeholder="Таймфрейм (необязательно)">
     <input name="comment" placeholder="Комментарий (необязательно)">
 
-    <input type="date" name="date">
+    <input type="date" name="date" id="date" required>
 
     <button type="submit">Создать</button>
 </form>
@@ -156,6 +169,8 @@ tr:hover {
 <div class="card" style="flex: 2;">
 <h3>История сделок</h3>
 
+<!-- ✅ ОБЁРТКА ДЛЯ СКРОЛЛА -->
+<div class="table-container">
 <table>
 <tr>
     <th></th>
@@ -197,6 +212,7 @@ tr:hover {
 {% endfor %}
 </table>
 </div>
+</div>
 
 <!-- РЕДАКТИРОВАНИЕ -->
 <div class="card">
@@ -212,9 +228,9 @@ tr:hover {
         <option value="short">Short</option>
     </select>
 
-    <input name="amount" id="edit-amount" type="number">
-    <input name="entry_price" id="edit-entry" type="number">
-    <input name="exit_price" id="edit-exit" type="number">
+    <input name="amount" id="edit-amount" type="number" step="any">
+    <input name="entry_price" id="edit-entry" type="number" step="any">
+    <input name="exit_price" id="edit-exit" type="number" step="any">
 
     <input name="timeframe" id="edit-tf">
     <input name="comment" id="edit-comment">
@@ -230,12 +246,23 @@ tr:hover {
 </div>
 
 <script>
+let selectedId = null;
+
+// =====================
+// ВЫБОР СДЕЛКИ
+// =====================
 document.querySelectorAll(".deal-row").forEach(row => {
     row.addEventListener("click", () => {
 
-        const id = row.dataset.id;
+        // убрать выделение со всех
+        document.querySelectorAll(".deal-row").forEach(r => r.classList.remove("selected"));
 
-        document.getElementById("selected-id").value = id;
+        // выделить текущую
+        row.classList.add("selected");
+
+        selectedId = row.dataset.id;
+
+        document.getElementById("selected-id").value = selectedId;
 
         document.getElementById("edit-asset").value = row.dataset.asset;
         document.getElementById("edit-direction").value = row.dataset.direction;
@@ -246,8 +273,53 @@ document.querySelectorAll(".deal-row").forEach(row => {
         document.getElementById("edit-comment").value = row.dataset.comment;
         document.getElementById("edit-date").value = row.dataset.date;
 
-        document.getElementById("edit-form").action = "/deals/update/" + id;
+        document.getElementById("edit-form").action = "/deals/update/" + selectedId;
     });
+});
+
+// =====================
+// ПРОВЕРКА УДАЛЕНИЯ
+// =====================
+document.querySelector('form[action="/deals/delete-selected"]').addEventListener("submit", function(e) {
+    if (!selectedId) {
+        e.preventDefault();
+        alert("Выбери сделку для удаления");
+    }
+});
+
+// =====================
+// ПРОВЕРКА РЕДАКТИРОВАНИЯ
+// =====================
+document.getElementById("edit-form").addEventListener("submit", function(e) {
+    if (!selectedId) {
+        e.preventDefault();
+        alert("Сначала выбери сделку");
+        return;
+    }
+
+    const asset = document.getElementById("edit-asset").value.trim();
+    const amount = document.getElementById("edit-amount").value;
+    const entry = document.getElementById("edit-entry").value;
+    const exit = document.getElementById("edit-exit").value;
+    const date = document.getElementById("edit-date").value;
+
+    if (!asset || !amount || !entry || !exit || !date) {
+        e.preventDefault();
+        alert("Заполни все обязательные поля");
+        return;
+    }
+
+    if (amount <= 0) {
+        e.preventDefault();
+        alert("Объем должен быть больше 0");
+        return;
+    }
+
+    if (entry <= 0 || exit <= 0) {
+        e.preventDefault();
+        alert("Цены должны быть больше 0");
+        return;
+    }
 });
 </script>
 
