@@ -18,6 +18,17 @@
             align-items: center;
             height: 100vh;
             padding: 0 80px;
+            position: relative; /* ✅ важно */
+        }
+
+        /* ✅ ЛИНИЯ ЧЕРЕЗ ВЕСЬ ЭКРАН */
+        .top-line {
+            position: absolute;
+            top: 120px;
+            left: 80px;
+            right: 80px;
+            height: 2px;
+            background: #7b2ff7;
         }
 
         .left {
@@ -39,9 +50,9 @@
         }
 
         .btn {
-            padding: 15px 40px;
-            border-radius: 30px;
-            font-size: 16px;
+            padding: 35px 120px;
+            border-radius: 40px;
+            font-size: 22px;
             cursor: pointer;
             margin-right: 20px;
             text-decoration: none;
@@ -60,10 +71,12 @@
 
         .right {
             text-align: center;
+            position: relative;
+            top: -120px;
         }
 
         .big-btn {
-            padding: 25px 80px;
+            padding: 35px 120px;
             border-radius: 40px;
             font-size: 22px;
             background: linear-gradient(90deg, #7b2ff7, #9b00ff);
@@ -76,14 +89,39 @@
             background: #7b2ff7;
             margin-top: 30px;
         }
+
+        .purple-line {
+            height: 2px;
+            background: #7b2ff7;
+            margin: 30px 0;
+        }
+
+        /* ✅ линии вокруг кнопки */
+        .register-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .register-line {
+            flex: 1;
+            height: 2px;
+            background: #7b2ff7;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
 
+    <!-- ✅ ГЛОБАЛЬНАЯ ЛИНИЯ -->
+    <div class="top-line"></div>
+
     <div class="left">
+
         <h1>ТВОЙ ЛИЧНЫЙ<br>ДНЕВНИК ТРЕЙДЕРА</h1>
+
+        <div class="purple-line"></div>
 
         <p>
             Автоматический учёт, глубокая аналитика и контроль эмоций.<br>
@@ -98,8 +136,19 @@
     </div>
 
     <div class="right">
-        <a href="/auth-page?mode=register" class="big-btn">Регистрация</a>
-        <div class="line"></div>
+
+        <div class="register-wrapper">
+
+            <div class="register-line"></div>
+
+            <a href="/auth-page?mode=register" class="big-btn">
+                Регистрация
+            </a>
+
+            <div class="register-line"></div>
+
+        </div>
+
     </div>
 
 </div>
