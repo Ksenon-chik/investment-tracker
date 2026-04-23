@@ -120,8 +120,22 @@
 
         <!-- КАПИТАЛ -->
         <div class="card" style="flex: 1;">
-            <h3>Общий капитал</h3>
-            <h2>{{ total_capital }}</h2>
+            <h3>Финансовое состояние</h3>
+    
+            <p style="color: #aaa; margin-bottom: 5px;">Начальный баланс:</p>
+            <h3 style="margin-top: 0;">{{ user.start_balance }}</h3>
+
+            <hr style="border: 0; border-top: 1px solid #444; margin: 15px 0;">
+
+            <p style="color: #aaa; margin-bottom: 5px;">Общий капитал (текущий):</p>
+            <h2 style="margin-top: 0; color: #7b2ff7;">{{ user.total_capital }}</h2>
+    
+            <p style="font-size: 0.9em;">
+                Чистая прибыль: 
+                <span style="color: {{ 'lightgreen' if (user.total_capital - user.start_balance) >= 0 else '#ff4d4d' }}">
+                    {{ (user.total_capital - user.start_balance) | round(2) }}
+                </span>
+            </p>
         </div>
 
     </div>
@@ -139,47 +153,43 @@
 
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
+// Твой код валидации пароля (без изменений)
+const passwordForm = document.getElementById("password-form");
+if (passwordForm) {
+    passwordForm.addEventListener("submit", function(e) {
+        const oldPass = document.getElementById("old-pass").value.trim();
+        const newPass = document.getElementById("new-pass").value.trim();
+        const confirm = document.getElementById("confirm-pass").value.trim();
 
-document.getElementById("password-form").addEventListener("submit", function(e) {
-
-    const oldPass = document.getElementById("old-pass").value.trim();
-    const newPass = document.getElementById("new-pass").value.trim();
-    const confirm = document.getElementById("confirm-pass").value.trim();
-
-    // пустые поля
-    if (!oldPass || !newPass || !confirm) {
-        alert("Заполни все поля");
-        e.preventDefault();
-        return;
-    }
-
-    // длина
-    if (newPass.length < 6) {
-        alert("Пароль должен быть минимум 6 символов");
-        e.preventDefault();
-        return;
-    }
-
-    // совпадение
-    if (newPass !== confirm) {
-        alert("Пароли не совпадают");
-        e.preventDefault();
-        return;
-    }
-
-    // защита от одинакового пароля
-    if (oldPass === newPass) {
-        alert("Новый пароль должен отличаться от старого");
-        e.preventDefault();
-        return;
-    }
-});
-
+        if (!oldPass || !newPass || !confirm) {
+            alert("Заполни все поля");
+            e.preventDefault();
+            return;
+        }
+        if (newPass.length < 6) {
+            alert("Пароль должен быть минимум 6 символов");
+            e.preventDefault();
+            return;
+        }
+        if (newPass !== confirm) {
+            alert("Пароли не совпадают");
+            e.preventDefault();
+            return;
+        }
+        if (oldPass === newPass) {
+            alert("Новый пароль должен отличаться от старого");
+            e.preventDefault();
+            return;
+        }
+    });
+}
 </script>
 
 <script>
-const rawData = {{ chart_data | tojson }};
+// Добавили | safe, чтобы данные передавались корректно
+const rawData = {{ chart_data | tojson | safe }};
 
 const labels = rawData.length ? rawData.map(d => d.date) : [];
 const values = rawData.length ? rawData.map(d => d.balance) : [];
@@ -194,14 +204,13 @@ if (ctx) {
             datasets: [{
                 label: "Капитал",
                 data: values,
-
-                // стиль
-                borderColor: "#9b00ff",        // фиолетовая линия
+                // Твой стиль
+                borderColor: "#9b00ff",
                 backgroundColor: "rgba(155, 0, 255, 0.1)",
                 borderWidth: 2,
-                pointRadius: 3,
+                pointRadius: 4,      // Чуть увеличил, чтобы точку старта было видно лучше
                 pointHoverRadius: 6,
-                tension: 0.4,                  // плавность линии
+                tension: 0.4,
                 fill: true
             }]
         },
@@ -248,6 +257,7 @@ if (ctx) {
                     }
                 },
                 y: {
+                    beginAtZero: false, // Оставляем false, чтобы видеть масштаб от 125 до 506
                     ticks: {
                         color: "#aaa"
                     },

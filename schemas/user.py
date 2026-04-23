@@ -8,6 +8,7 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     email: str
     password: str
+    start_balance: float
 
     @field_validator("password")
     def validator_password(cls, value):
@@ -24,6 +25,15 @@ class UserCreate(UserBase):
             raise ValueError("Пароль должен содержать хотя бы одну заглавную букву")
 
         return value
+    
+class UserRead(UserBase):
+    id: int
+    created_at: datetime
+    start_balance: float
+    total_capital: float
+
+    class Config:
+        from_attributes = True
 
 class UserResponse(BaseModel):
     id: int

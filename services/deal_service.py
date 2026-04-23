@@ -18,7 +18,8 @@ def create_deal(
         rr_ratio=deal_data.rr_ratio,
         comment=deal_data.comment,
         timeframe=deal_data.timeframe,
-        price=deal_data.price
+        price=deal_data.price,
+        profit=deal_data.result
     )
 
     db.add(deal)

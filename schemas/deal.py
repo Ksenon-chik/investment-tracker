@@ -5,9 +5,11 @@ class DealBase(BaseModel):
     date: datetime
     asset: str
     direction: str
-    result: str
+
     amount: float
-    price: float
+    entry_price: float
+    exit_price: float
+
     rr_ratio: float | None = None
     comment: str | None = None
     timeframe: str | None = None

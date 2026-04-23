@@ -106,6 +106,7 @@ input {
     <input name="email" placeholder="Email" required>
     <input type="password" id="reg-password" name="password" placeholder="Пароль" required>
     <input type="password" id="reg-confirm" name="confirm_password" placeholder="Повтори пароль" required>
+    <input type="number" step="any" id="start-balance" name="start_balance" placeholder="Начальный баланс" required>
     <button class="btn">Зарегистрироваться</button>
 </form>
 
@@ -139,6 +140,8 @@ function validateRegister() {
     const pass = document.getElementById("reg-password").value;
     const confirm = document.getElementById("reg-confirm").value;
 
+    const balance = document.getElementById("start-balance").value;
+
     if (pass.length < 6) {
         alert("Пароль должен быть минимум 6 символов");
         return false;
@@ -146,6 +149,11 @@ function validateRegister() {
 
     if (pass !== confirm) {
         alert("Пароли не совпадают");
+        return false;
+    }
+
+    if (!balance || balance <= 0) {
+        alert("Баланс должен быть больше 0");
         return false;
     }
 

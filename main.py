@@ -26,24 +26,3 @@ def home(request: Request):
 @app.get("/auth-page")
 def auth_page(request: Request):
     return templates.TemplateResponse("auth.html", {"request": request})
-
-@app.get("/profile", response_class=HTMLResponse)
-def profile(request: Request, db: Session = Depends(get_db)):
-    user_id = request.cookies.get("user_id")
-
-    if not user_id:
-        return RedirectResponse("/auth-page")
-
-    user = get_user_by_id(db, int(user_id))
-    deals = user.deals
-
-    total_capital = calculate_total_capital(deals)
-
-    chart_data = equity_curve(deals)
-
-    return templates.TemplateResponse("profile.html", {
-        "request": request,
-        "user": user,
-        "total_capital": total_capital,
-        "chart_data": chart_data
-    })

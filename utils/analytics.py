@@ -64,14 +64,23 @@ def asset_distribution(deals):
     return dict(result)
 
 
-def equity_curve(deals):
-    balance = 0
+def equity_curve(deals, start_balance=0): # Добавили аргумент
+    balance = float(start_balance) # Начинаем не с нуля, а со стартового баланса
     chart = []
 
+    # Добавляем самую первую точку - стартовый баланс (если есть хотя бы одна сделка)
+    # Это создаст ту самую линию "от старта"
     sorted_deals = sorted(
         [d for d in deals if getattr(d, "date", None)],
         key=lambda x: x.date
     )
+    
+    # Если сделки есть, добавим точку регистрации или дату первой сделки как старт
+    if sorted_deals:
+        chart.append({
+            "date": "Старт", 
+            "balance": round(balance, 2)
+        })
 
     for d in sorted_deals:
         entry = getattr(d, "entry_price", None)
@@ -83,14 +92,14 @@ def equity_curve(deals):
             continue
 
         if direction in ["buy", "long"]:
-            pnl = (exit_ - entry) * amount
+            pnl = (float(exit_) - float(entry)) * float(amount)
         else:
-            pnl = (entry - exit_) * amount
+            pnl = (float(entry) - float(exit_)) * float(amount)
 
         balance += pnl
 
         chart.append({
-            "date": d.date.strftime("%Y-%m-%d"),
+            "date": d.date.strftime("%d.%m"), # Укоротил дату для красоты
             "balance": round(balance, 2)
         })
 

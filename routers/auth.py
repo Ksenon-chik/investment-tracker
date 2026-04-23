@@ -18,22 +18,45 @@ def register_form(
     email: str = Form(...),
     password: str = Form(...),
     confirm_password: str = Form(...),
+    start_balance: float = Form(...),  # приходит строкой
     db: Session = Depends(get_db)
 ):
+    if not email or not password or not confirm_password:
+        return RedirectResponse(
+            "/auth-page?error=Заполни все поля&mode=register",
+            status_code=303
+        )
+
+    # преобразование
+    try:
+        start_balance = float(start_balance)
+    except:
+        return RedirectResponse(
+            "/auth-page?error=Баланс должен быть числом&mode=register",
+            status_code=303
+        )
+
+    if start_balance <= 0:
+        return RedirectResponse(
+            "/auth-page?error=Баланс должен быть больше 0&mode=register",
+            status_code=303
+        )
+
     if password != confirm_password:
         return RedirectResponse(
             "/auth-page?error=Пароли не совпадают&mode=register",
             status_code=303
         )
 
-    if len(password) < 6:
-        return RedirectResponse(
-            "/auth-page?error=Пароль слишком короткий&mode=register",
-            status_code=303
-        )
-
     try:
-        user = create_user(db, UserCreate(email=email, password=password))
+        user = create_user(
+            db,
+            UserCreate(
+                email=email,
+                password=password,
+                start_balance=start_balance
+            )
+        )
 
         response = RedirectResponse("/profile", status_code=303)
         response.set_cookie("user_id", str(user.id))
