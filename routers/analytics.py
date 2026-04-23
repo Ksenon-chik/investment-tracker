@@ -21,14 +21,25 @@ def analytics_page(request: Request, db: Session = Depends(get_db)):
     user_id = request.cookies.get("user_id")
 
     if not user_id:
-        return templates.TemplateResponse("auth.html", {"request": request})
+        from fastapi.responses import RedirectResponse
+        return RedirectResponse("/auth-page")
 
-    deals = get_user_deals(db, int(user_id))
+    # Получаем пользователя, чтобы узнать его баланс
+    from services.user_service import get_user_by_id
+    user = get_user_by_id(db, int(user_id))
+    
+    if not user:
+        from fastapi.responses import RedirectResponse
+        return RedirectResponse("/auth-page")
 
+    deals = user.deals  # Сделки пользователя
+
+    # Расчеты
     stats = calculate_stats(deals)
     week_data = deals_by_day(deals)
     assets_data = asset_distribution(deals)
-    chart_data = equity_curve(deals)
+    
+    chart_data = equity_curve(deals, user.start_balance)
 
     return templates.TemplateResponse("analytics.html", {
         "request": request,

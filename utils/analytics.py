@@ -64,43 +64,34 @@ def asset_distribution(deals):
     return dict(result)
 
 
-def equity_curve(deals, start_balance=0): # Добавили аргумент
-    balance = float(start_balance) # Начинаем не с нуля, а со стартового баланса
+def equity_curve(deals, start_balance):
+    balance = float(start_balance)
     chart = []
-
-    # Добавляем самую первую точку - стартовый баланс (если есть хотя бы одна сделка)
-    # Это создаст ту самую линию "от старта"
+    
+    # Сортируем сделки по дате
     sorted_deals = sorted(
-        [d for d in deals if getattr(d, "date", None)],
+        [d for d in deals if getattr(d, "date", None)], 
         key=lambda x: x.date
     )
     
-    # Если сделки есть, добавим точку регистрации или дату первой сделки как старт
-    if sorted_deals:
-        chart.append({
-            "date": "Старт", 
-            "balance": round(balance, 2)
-        })
+    # Добавляем первую точку (баланс при регистрации)
+    chart.append({
+        "date": "Старт", 
+        "balance": round(balance, 2)
+    })
 
     for d in sorted_deals:
-        entry = getattr(d, "entry_price", None)
-        exit_ = getattr(d, "exit_price", None)
-        direction = getattr(d, "direction", None)
-        amount = getattr(d, "amount", 0) or 0
-
-        if entry is None or exit_ is None or direction is None:
-            continue
-
-        if direction in ["buy", "long"]:
-            pnl = (float(exit_) - float(entry)) * float(amount)
-        else:
-            pnl = (float(entry) - float(exit_)) * float(amount)
-
+        # Берем готовый профит из базы (как в профиле)
+        pnl = float(getattr(d, "profit", 0) or 0)
         balance += pnl
 
         chart.append({
-            "date": d.date.strftime("%d.%m"), # Укоротил дату для красоты
+            "date": d.date.strftime("%d.%m"), 
             "balance": round(balance, 2)
         })
+
+    # Если сделок еще нет, рисуем прямую линию от старта
+    if len(chart) == 1:
+        chart.append({"date": "Сегодня", "balance": round(balance, 2)})
 
     return chart
