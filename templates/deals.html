@@ -3,162 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Сделки | Investment Tracker</title>
-
-    <style>
-        :root {
-            --primary-bg: #121212;
-            --card-bg: #1e1e1e;
-            --accent: #7b2ff7;
-            --accent-hover: #9b00ff;
-            --text-main: #ffffff;
-            --text-muted: #aaa;
-            --border-color: #333;
-            --success: #00ff7f;
-            --danger: #ff4d4d;
-        }
-
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: var(--primary-bg);
-            color: var(--text-main);
-            display: flex;
-        }
-
-        /* SIDEBAR - Точная копия профиля */
-        .sidebar {
-            width: 261px;
-            background: var(--card-bg);
-            height: 100vh;
-            padding: 30px 20px;
-            border-right: 1px solid var(--border-color);
-            position: fixed;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            box-sizing: border-box;
-        }
-
-        .logout-btn {
-            color: var(--text-muted);
-            text-decoration: none;
-            padding: 10px 15px;
-            transition: 0.3s;
-        }
-
-        .sidebar h3 { font-size: 24px; margin-bottom: 40px; text-align: center; }
-
-        .sidebar a {
-            display: flex;
-            align-items: center;
-            padding: 12px 15px;
-            margin: 10px 0;
-            color: var(--text-muted);
-            text-decoration: none;
-            border-radius: 10px;
-            transition: 0.3s;
-        }
-
-        .sidebar a:hover, .sidebar a.active {
-            background: rgba(123, 47, 247, 0.1);
-            color: var(--accent);
-        }
-
-        /* MAIN CONTENT - Точная копия профиля */
-        .main {
-            margin-left: 260px;
-            flex: 1;
-            padding: 40px;
-            max-width: 1200px;
-        }
-
-        h2 { margin-bottom: 30px; font-weight: 600; letter-spacing: -0.5px; }
-
-        /* CARDS */
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            transition: border-color 0.3s;
-        }
-
-        .card:hover { border-color: var(--accent); }
-        .card h3 { margin-top: 0; margin-bottom: 20px; font-size: 1.2em; color: var(--accent); }
-
-        /* GRID */
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-        }
-
-        /* INPUTS */
-        .form-group { margin-bottom: 15px; }
-        
-        input, select {
-            width: 100%;
-            padding: 12px 16px;
-            background: #121212;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            color: white;
-            box-sizing: border-box;
-            transition: 0.3s;
-            outline: none;
-            margin-top: 5px;
-        }
-
-        input:focus, select:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 8px rgba(123, 47, 247, 0.3);
-        }
-
-        .btn {
-            width: 100%;
-            padding: 14px;
-            border-radius: 10px;
-            border: none;
-            background: linear-gradient(135deg, var(--accent), var(--accent-hover));
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s;
-            margin-top: 10px;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(123, 47, 247, 0.4);
-        }
-
-        .btn-delete {
-            background: transparent;
-            border: 1px solid var(--danger);
-            color: var(--danger);
-            margin-top: 10px;
-        }
-
-        /* TABLE */
-        .table-container {
-            max-height: 400px;
-            overflow-y: auto;
-            border-radius: 12px;
-            background: #181818;
-            border: 1px solid #2a2a2a;
-        }
-
-        table { width: 100%; border-collapse: collapse; font-size: 0.85em; }
-        th { background: #252525; position: sticky; top: 0; padding: 12px; text-align: left; color: var(--text-muted); z-index: 10; }
-        td { padding: 12px; border-bottom: 1px solid #252525; }
-        tr:hover { background: rgba(123, 47, 247, 0.05); cursor: pointer; }
-        .selected { background: rgba(123, 47, 247, 0.15) !important; }
-
-        .pnl-plus { color: var(--success); font-weight: bold; }
-        .pnl-minus { color: var(--danger); font-weight: bold; }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/main.css') }}">
 </head>
 <body>
 
@@ -166,10 +11,9 @@
     <div class="menu-top">
         <h3>Tracker</h3>
         <a href="/profile">Профиль</a>
-        <a href="/deals">Сделки</a>
+        <a href="/deals" class="active">Сделки</a>
         <a href="/analytics">Аналитика</a>
     </div>
-
     <div class="menu-bottom">
         <a href="/" class="logout-btn">Выйти</a>
     </div>
@@ -178,7 +22,7 @@
 <div class="main">
     <h2>Сделки</h2>
 
-    <div class="grid">
+    <div class="grid" style="grid-template-columns: 1fr 1fr;">
         <div class="card">
             <h3>Создать сделку</h3>
             <form method="post" action="/deals/create">
@@ -198,22 +42,14 @@
                     <input name="amount" type="number" step="any" placeholder="Объем" required>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <div class="form-group">
-                        <input name="entry_price" type="number" step="any" placeholder="Цена входа" required>
-                    </div>
-                    <div class="form-group">
-                        <input name="exit_price" type="number" step="any" placeholder="Цена выхода">
-                    </div>
+                    <input name="entry_price" type="number" step="any" placeholder="Цена входа" required>
+                    <input name="exit_price" type="number" step="any" placeholder="Цена выхода">
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <div class="form-group">
-                        <input name="timeframe" placeholder="Таймфрейм">
-                    </div>
-                    <div class="form-group">
-                        <input type="date" name="date" required>
-                    </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
+                    <input name="timeframe" placeholder="Таймфрейм">
+                    <input type="date" name="date" required>
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="margin-top: 15px;">
                     <input name="comment" placeholder="Комментарий">
                 </div>
                 <button class="btn">Создать сделку</button>
@@ -223,9 +59,7 @@
         <div class="card">
             <h3>Редактирование</h3>
             <form method="post" id="edit-form">
-                <div class="form-group">
-                    <input name="asset" id="edit-asset" placeholder="Актив">
-                </div>
+                <div class="form-group"><input name="asset" id="edit-asset" placeholder="Актив"></div>
                 <div class="form-group">
                     <select name="direction" id="edit-direction">
                         <option value="buy">Buy</option>
@@ -234,27 +68,15 @@
                         <option value="short">Short</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <input name="amount" id="edit-amount" type="number" step="any" placeholder="Объем">
-                </div>
+                <div class="form-group"><input name="amount" id="edit-amount" type="number" step="any" placeholder="Объем"></div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <div class="form-group">
-                        <input name="entry_price" id="edit-entry" type="number" step="any" placeholder="Цена входа">
-                    </div>
-                    <div class="form-group">
-                        <input name="exit_price" id="edit-exit" type="number" step="any" placeholder="Цена выхода">
-                    </div>
+                    <input name="entry_price" id="edit-entry" type="number" step="any" placeholder="Цена входа">
+                    <input name="exit_price" id="edit-exit" type="number" step="any" placeholder="Цена выхода">
                 </div>
-                <div class="form-group">
-                    <input name="comment" id="edit-comment" placeholder="Комментарий">
-                </div>
+                <div class="form-group" style="margin-top: 15px;"><input name="comment" id="edit-comment" placeholder="Комментарий"></div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <div class="form-group">
-                        <input name="timeframe" id="edit-tf" placeholder="TF">
-                    </div>
-                    <div class="form-group">
-                        <input type="date" name="date" id="edit-date">
-                    </div>
+                    <input name="timeframe" id="edit-tf" placeholder="TF">
+                    <input type="date" name="date" id="edit-date">
                 </div>
                 <button class="btn">Сохранить изменения</button>
             </form>
@@ -285,7 +107,7 @@
                 </thead>
                 <tbody>
                     {% for deal in deals %}
-                    <tr class="deal-row"
+                    <tr class="deal-row" 
                         data-id="{{ deal.id }}"
                         data-asset="{{ deal.asset }}"
                         data-direction="{{ deal.direction }}"
@@ -314,31 +136,7 @@
     </div>
 </div>
 
-<script>
-let selectedId = null;
-
-document.querySelectorAll(".deal-row").forEach(row => {
-    row.addEventListener("click", () => {
-        document.querySelectorAll(".deal-row").forEach(r => r.classList.remove("selected"));
-        row.classList.add("selected");
-
-        selectedId = row.dataset.id;
-        document.getElementById("selected-id").value = selectedId;
-        
-        // Заполнение полей редактирования
-        document.getElementById("edit-asset").value = row.dataset.asset;
-        document.getElementById("edit-direction").value = row.dataset.direction;
-        document.getElementById("edit-amount").value = row.dataset.amount; // Теперь объем подтягивается
-        document.getElementById("edit-entry").value = row.dataset.entry;
-        document.getElementById("edit-exit").value = row.dataset.exit;
-        document.getElementById("edit-tf").value = row.dataset.tf;
-        document.getElementById("edit-comment").value = row.dataset.comment;
-        document.getElementById("edit-date").value = row.dataset.date;
-
-        document.getElementById("edit-form").action = "/deals/update/" + selectedId;
-    });
-});
-</script>
+<script src="{{ url_for('static', path='/js/deals.js') }}"></script>
 
 </body>
 </html>

@@ -7,10 +7,12 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from services.user_service import get_user_by_id
 from sqlalchemy.orm import Session
 from utils.calculations import calculate_total_capital, equity_curve
+from fastapi.staticfiles import StaticFiles
 
 templates = Jinja2Templates(directory="templates")
 
 app = FastAPI(title="Investment Tracker")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 init_db()
 

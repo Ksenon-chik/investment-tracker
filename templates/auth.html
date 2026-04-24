@@ -1,175 +1,51 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<title>Авторизация</title>
-
-<style>
-body {
-    margin: 0;
-    font-family: Arial;
-    background: #1e1e1e;
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-}
-
-.card {
-    width: 400px;
-    padding: 40px;
-    border-radius: 20px;
-    border: 1px solid #7b2ff7;
-    background: #2a2a2a;
-}
-
-.tabs {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-}
-
-.tab {
-    padding: 10px 20px;
-    border-radius: 20px;
-    border: 1px solid #7b2ff7;
-    cursor: pointer;
-    text-align: center;
-    flex: 1;
-}
-
-.tab:first-child {
-    margin-right: 10px;
-}
-
-.active {
-    background: linear-gradient(90deg, #7b2ff7, #9b00ff);
-}
-
-input {
-    width: 100%;
-    padding: 12px;
-    margin-top: 15px;
-    border: none;
-    border-bottom: 1px solid #7b2ff7;
-    background: transparent;
-    color: white;
-}
-
-.btn {
-    width: 100%;
-    padding: 15px;
-    margin-top: 25px;
-    border-radius: 25px;
-    border: none;
-    background: linear-gradient(90deg, #7b2ff7, #9b00ff);
-    color: white;
-    cursor: pointer;
-}
-
-.error {
-    color: red;
-    text-align: center;
-    margin-top: 10px;
-}
-</style>
+    <meta charset="UTF-8">
+    <title>Авторизация | Investment Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/main.css') }}">
 </head>
+<body class="auth-body">
 
-<body>
+<div class="card auth-card">
+    <h2 style="text-align:center; margin-bottom: 25px;">Investment Tracker</h2>
 
-<div class="card">
+    <div class="tabs">
+        <div class="tab active" id="login-tab" onclick="showLogin()">Вход</div>
+        <div class="tab" id="register-tab" onclick="showRegister()">Регистрация</div>
+    </div>
 
-<h2 style="text-align:center;">Войти или создать аккаунт</h2>
+    {% if request.query_params.get("error") %}
+        <div class="error-msg">{{ request.query_params.get("error") }}</div>
+    {% endif %}
 
-<div class="tabs">
-    <div class="tab active" id="login-tab" onclick="showLogin()">Вход</div>
-    <div class="tab" id="register-tab" onclick="showRegister()">Регистрация</div>
+    <form id="login-form" method="post" action="/auth/login-form">
+        <div class="form-group">
+            <input name="email" type="email" placeholder="Email" required>
+        </div>
+        <div class="form-group">
+            <input type="password" name="password" placeholder="Пароль" required>
+        </div>
+        <button class="btn">Войти</button>
+    </form>
+
+    <form id="register-form" method="post" action="/auth/register" style="display:none;" onsubmit="return validateRegister()">
+        <div class="form-group">
+            <input name="email" type="email" placeholder="Email" required>
+        </div>
+        <div class="form-group">
+            <input type="password" id="reg-password" name="password" placeholder="Пароль" required>
+        </div>
+        <div class="form-group">
+            <input type="password" id="reg-confirm" name="confirm_password" placeholder="Повторите пароль" required>
+        </div>
+        <div class="form-group">
+            <input type="number" step="any" id="start-balance" name="start_balance" placeholder="Начальный баланс" required>
+        </div>
+        <button class="btn">Создать аккаунт</button>
+    </form>
 </div>
 
-<!-- ошибки -->
-{% if request.query_params.get("error") %}
-<p class="error">
-    {{ request.query_params.get("error") }}
-</p>
-{% endif %}
-
-<!-- LOGIN -->
-<form id="login-form" method="post" action="/auth/login-form">
-    <input name="email" placeholder="Email" required>
-    <input type="password" name="password" placeholder="Пароль" required>
-    <button class="btn">Войти</button>
-</form>
-
-<!-- REGISTER -->
-<form id="register-form" method="post" action="/auth/register" style="display:none;" onsubmit="return validateRegister()">
-    <input name="email" placeholder="Email" required>
-    <input type="password" id="reg-password" name="password" placeholder="Пароль" required>
-    <input type="password" id="reg-confirm" name="confirm_password" placeholder="Повтори пароль" required>
-    <input type="number" step="any" id="start-balance" name="start_balance" placeholder="Начальный баланс" required>
-    <button class="btn">Зарегистрироваться</button>
-</form>
-
-</div>
-
-<script>
-const loginForm = document.getElementById("login-form");
-const registerForm = document.getElementById("register-form");
-
-const loginTab = document.getElementById("login-tab");
-const registerTab = document.getElementById("register-tab");
-
-function showLogin() {
-    loginForm.style.display = "block";
-    registerForm.style.display = "none";
-
-    loginTab.classList.add("active");
-    registerTab.classList.remove("active");
-}
-
-function showRegister() {
-    loginForm.style.display = "none";
-    registerForm.style.display = "block";
-
-    loginTab.classList.remove("active");
-    registerTab.classList.add("active");
-}
-
-// проверка паролей
-function validateRegister() {
-    const pass = document.getElementById("reg-password").value;
-    const confirm = document.getElementById("reg-confirm").value;
-
-    const balance = document.getElementById("start-balance").value;
-
-    if (pass.length < 6) {
-        alert("Пароль должен быть минимум 6 символов");
-        return false;
-    }
-
-    if (pass !== confirm) {
-        alert("Пароли не совпадают");
-        return false;
-    }
-
-    if (!balance || balance <= 0) {
-        alert("Баланс должен быть больше 0");
-        return false;
-    }
-
-    return true;
-}
-
-document.addEventListener("DOMContentLoaded", function () {
-    const params = new URLSearchParams(window.location.search);
-
-    if (params.get("mode") === "register") {
-        showRegister();
-    } else {
-        showLogin();
-    }
-});
-</script>
-
+<script src="{{ url_for('static', path='/js/auth.js') }}"></script>
 </body>
 </html>

@@ -3,178 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Профиль | Investment Tracker</title>
-
-    <style>
-        :root {
-            --primary-bg: #121212;
-            --card-bg: #1e1e1e;
-            --accent: #7b2ff7;
-            --accent-hover: #9b00ff;
-            --text-main: #ffffff;
-            --text-muted: #aaa;
-            --border-color: #333;
-        }
-
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: var(--primary-bg);
-            color: var(--text-main);
-            display: flex;
-        }
-
-        /* SIDEBAR */
-        .sidebar {
-            width: 261px;
-            background: var(--card-bg);
-            height: 100vh;
-            padding: 30px 20px;
-            border-right: 1px solid var(--border-color);
-            position: fixed;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            box-sizing: border-box;
-        }
-
-        .logout-btn {
-            color: var(--text-muted);
-            text-decoration: none;
-            padding: 10px 15px;
-            transition: 0.3s;
-        }
-
-        .sidebar h3 { font-size: 24px; margin-bottom: 40px; text-align: center; }
-
-        .sidebar a {
-            display: flex;
-            align-items: center;
-            padding: 12px 15px;
-            margin: 10px 0;
-            color: var(--text-muted);
-            text-decoration: none;
-            border-radius: 10px;
-            transition: 0.3s;
-        }
-
-        .sidebar a:hover, .sidebar a.active {
-            background: rgba(123, 47, 247, 0.1);
-            color: var(--accent);
-        }
-
-        /* MAIN CONTENT */
-        .main {
-            margin-left: 260px;
-            flex: 1;
-            padding: 40px;
-            max-width: 1200px;
-        }
-
-        h2 { margin-bottom: 30px; font-weight: 600; letter-spacing: -0.5px; }
-
-        /* CARDS */
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            transition: border-color 0.3s;
-        }
-
-        .card:hover {
-            border-color: var(--accent);
-        }
-
-        .card h3 {
-            margin-top: 0;
-            margin-bottom: 20px;
-            font-size: 1.2em;
-            color: var(--accent);
-        }
-
-        /* GRID */
-        .grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 24px;
-        }
-
-        /* PERSONAL INFO & FORM */
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #2a2a2a;
-        }
-
-        .info-label { color: var(--text-muted); }
-        .info-value { font-weight: 500; }
-
-        .password-section {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        /* INPUTS & BUTTONS */
-        .form-group { margin-bottom: 15px; }
-
-        input {
-            width: 100%;
-            padding: 12px 16px;
-            background: #121212;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            color: white;
-            box-sizing: border-box;
-            transition: 0.3s;
-            outline: none;
-        }
-
-        input:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 8px rgba(123, 47, 247, 0.3);
-        }
-
-        .btn {
-            width: 100%;
-            padding: 14px;
-            border-radius: 10px;
-            border: none;
-            background: linear-gradient(135deg, var(--accent), var(--accent-hover));
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s;
-            margin-top: 10px;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(123, 47, 247, 0.4);
-        }
-
-        /* ALERT STYLES */
-        .alert {
-            padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            font-size: 0.9em;
-        }
-        .alert-error { background: rgba(255, 77, 77, 0.1); color: #ff4d4d; border: 1px solid #ff4d4d; }
-        .alert-success { background: rgba(0, 255, 127, 0.1); color: #00ff7f; border: 1px solid #00ff7f; }
-
-        .chart-container { height: 350px; margin-top: 20px; }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/main.css') }}">
 </head>
 <body>
 
 <div class="sidebar">
     <div class="menu-top">
         <h3>Tracker</h3>
-        <a href="/profile">Профиль</a>
+        <a href="/profile" class="active">Профиль</a>
         <a href="/deals">Сделки</a>
         <a href="/analytics">Аналитика</a>
     </div>
@@ -185,7 +21,6 @@
 </div>
 
 <div class="main">
-
     <h2>Профиль пользователя</h2>
 
     {% if request.query_params.get("error") %}
@@ -197,7 +32,6 @@
     {% endif %}
 
     <div class="grid">
-
         <div class="card">
             <h3>Аккаунт</h3>
             <div class="info-row">
@@ -209,7 +43,7 @@
                 <span class="info-value">#{{ user.id }}</span>
             </div>
             
-            <div class="password-section">
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-color);">
                 <h4 style="margin-bottom: 15px;">Смена пароля</h4>
                 <form method="post" action="/auth/change-password" id="password-form">
                     <div class="form-group">
@@ -243,72 +77,22 @@
                 </span>
             </div>
         </div>
-
     </div>
 
     <div class="card">
         <h3>Динамика портфеля</h3>
-        <div class="chart-container">
+        <div class="chart-container" style="height: 350px;">
             <canvas id="chart"></canvas>
         </div>
     </div>
-
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
-// Твой исправленный скрипт валидации
-document.getElementById("password-form").addEventListener("submit", function(e) {
-    const oldPass = document.getElementById("old-pass").value.trim();
-    const newPass = document.getElementById("new-pass").value.trim();
-    const confirm = document.getElementById("confirm-pass").value.trim();
-
-    if (newPass.length < 6) {
-        alert("Пароль слишком короткий!");
-        e.preventDefault();
-        return;
-    }
-    if (newPass !== confirm) {
-        alert("Пароли не совпадают!");
-        e.preventDefault();
-    }
-});
-
-// Данные графика
-const rawData = {{ chart_data | tojson | safe }};
-const ctx = document.getElementById("chart");
-
-if (ctx) {
-    new Chart(ctx, {
-        type: "line",
-        data: {
-            labels: rawData.map(d => d.date),
-            datasets: [{
-                label: "Баланс",
-                data: rawData.map(d => d.balance),
-                borderColor: "#7b2ff7",
-                backgroundColor: "rgba(123, 47, 247, 0.1)",
-                borderWidth: 3,
-                pointRadius: 5,
-                pointBackgroundColor: "#7b2ff7",
-                tension: 0.4,
-                fill: true
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
-            },
-            scales: {
-                x: { ticks: { color: "#777" }, grid: { display: false } },
-                y: { ticks: { color: "#777" }, grid: { color: "#222" } }
-            }
-        }
-    });
-}
+    // Передаем данные из Jinja в JS
+    window.profileChartData = {{ chart_data | tojson | safe }};
 </script>
+<script src="{{ url_for('static', path='/js/profile.js') }}"></script>
+
 </body>
 </html>
