@@ -20,7 +20,7 @@ if (ctxProfit && window.chartData) {
                 borderColor: purple,
                 backgroundColor: "rgba(123, 47, 247, 0.1)",
                 borderWidth: 3,
-                pointRadius: 5,
+                pointRadius: 4, // Чуть меньше для мобилок
                 tension: 0.4,
                 fill: true
             }]
@@ -47,13 +47,25 @@ if (ctxAssets && window.assetsData) {
             datasets: [{
                 data: Object.values(window.assetsData),
                 backgroundColor: ["#7b2ff7", "#9b00ff", "#5a1fd7", "#3b0ca3", "#1a1a1a"],
-                borderWidth: 0
+                borderWidth: 3,
+                borderColor: "#1e1e1e",
+                hoverBorderColor: "#7b2ff7"
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { position: 'bottom', labels: { color: '#aaa' } } },
+            plugins: { 
+                legend: { 
+                    position: 'bottom', 
+                    labels: { 
+                        color: '#aaa',
+                        boxWidth: 10, // Меньше квадратики — больше места кругу
+                        padding: 10,
+                        font: { size: 11 }
+                    } 
+                } 
+            },
             cutout: '70%'
         }
     });
@@ -73,7 +85,12 @@ if (ctxWeek && window.weekData) {
                 data: orderedValues,
                 backgroundColor: purple,
                 borderRadius: 8,
-                barThickness: 40
+                /* ИЗМЕНЕНИЯ ТУТ: */
+                maxBarThickness: 40, // Ограничиваем максимум, но разрешаем сужаться
+                categoryPercentage: 0.8, // Регулирует ширину группы
+                barPercentage: 0.9,      // Регулирует ширину самого бара
+                borderWidth: 1,
+                borderColor: "rgba(255, 255, 255, 0.1)"
             }]
         },
         options: {
@@ -82,7 +99,11 @@ if (ctxWeek && window.weekData) {
             plugins: { legend: { display: false } },
             scales: {
                 x: { grid: { display: false } },
-                y: { beginAtZero: true, grid: { color: gridColor }, ticks: { stepSize: 1 } }
+                y: { 
+                    beginAtZero: true, 
+                    grid: { color: gridColor }, 
+                    ticks: { stepSize: 1 } 
+                }
             }
         }
     });

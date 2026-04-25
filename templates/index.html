@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Трейдинг дневник | Главная</title>
     <link rel="stylesheet" href="{{ url_for('static', path='/css/main.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', path='/css/home.css') }}">
@@ -12,34 +13,24 @@
     <div class="top-line"></div>
 
     <div class="home-left">
-        <h1>ТВОЙ ЛИЧНЫЙ<br><span style="color: var(--accent);">ДНЕВНИК</span> ТРЕЙДЕРА</h1>
-
+        <h1 class="main-title">ТВОЙ ЛИЧНЫЙ<br><span class="accent-text">ДНЕВНИК</span> ТРЕЙДЕРА</h1>
         <div class="purple-line"></div>
-
-        <p>
+        <p class="description">
             Ручной учёт сделок, аналитика и контроль эмоций.<br>
             Улучшай свои результаты каждый день вместе с нами.
         </p>
-
-        <div style="margin-top: 50px;">
-            <a href="/auth-page?mode=login" class="home-btn btn-login">ВХОД</a>
-        </div>
+        <a href="/auth-page?mode=login" class="home-btn">ВХОД</a>
     </div>
 
     <div class="home-right">
-        <div class="register-wrapper">
-            <div class="register-line"></div>
-            
-            <a href="/auth-page?mode=register" class="home-btn btn-register">
-                РЕГИСТРАЦИЯ
-            </a>
-
-            <div class="register-line"></div>
+        <div class="register-group">
+            <div class="reg-line"></div>
+            <a href="/auth-page?mode=register" class="home-btn">РЕГИСТРАЦИЯ</a>
+            <div class="reg-line"></div>
         </div>
 
         <div class="profile-shot-wrapper">
-            <img src="{{ url_for('static', path='/img/profile.png') }}" 
-                 alt="Интерфейс Личного Кабинета">
+            <img src="{{ url_for('static', path='/img/profile.png') }}" alt="Интерфейс">
         </div>
     </div>
 </div>

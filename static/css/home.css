@@ -1,17 +1,18 @@
-/* static/css/home.css */
-
+/* --- БАЗОВЫЙ ДЕСКТОП --- */
 body.home-page {
     overflow: hidden;
-    display: block; 
+    display: block;
+    margin: 0;
 }
 
 .home-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 100vh;
+    height: 100vh; /* На десктопе фиксируем высоту */
     padding: 0 80px;
     position: relative;
+    box-sizing: border-box;
 }
 
 .top-line {
@@ -29,13 +30,14 @@ body.home-page {
     z-index: 2;
 }
 
-.home-left h1 {
+.main-title {
     font-size: 48px;
     font-weight: 800;
     line-height: 1.1;
     margin: 0;
-    letter-spacing: -1px;
 }
+
+.accent-text { color: var(--accent); }
 
 .purple-line {
     height: 2px;
@@ -51,22 +53,23 @@ body.home-page {
     margin-top: 20px;
 }
 
-/* ОДИНАКОВЫЕ ФИОЛЕТОВЫЕ КНОПКИ */
 .home-btn {
-    display: inline-block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 300px;
-    padding: 35px 0; /* Оптимальная высота */
+    height: 80px;
     border-radius: 40px;
     font-size: 20px;
     font-weight: 600;
-    text-align: center;
     text-decoration: none;
-    transition: 0.3s ease;
+    transition: all 0.3s ease;
+    background: transparent;
+    border: 2px solid var(--accent);
+    color: white;
+    text-transform: uppercase;
     cursor: pointer;
     box-sizing: border-box;
-    background: transparent;
-    border: 2px solid var(--accent); /* Фиолетовая граница по умолчанию */
-    color: white;
 }
 
 .home-btn:hover {
@@ -76,30 +79,28 @@ body.home-page {
 }
 
 .home-right {
-    text-align: center;
-    position: relative;
-    top: 20px;
-    z-index: 2;
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
+    top: 20px;
+    z-index: 2;
 }
 
-.register-wrapper {
+.register-group {
     display: flex;
     align-items: center;
     gap: 25px;
+    margin-bottom: 40px;
 }
 
-.register-line {
+.reg-line {
     width: 100px;
     height: 2px;
     background: var(--accent);
 }
 
-/* СКРИНШОТ ПРОФИЛЯ ПОД КНОПКОЙ */
 .profile-shot-wrapper {
-    margin-top: 40px;
     padding: 8px;
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid var(--border-color);
@@ -111,7 +112,7 @@ body.home-page {
 
 .profile-shot-wrapper img {
     display: block;
-    width: 550px; /* Ширина скриншота */
+    width: 700px;
     height: auto;
     border-radius: 10px;
     border: 1px solid rgba(123, 47, 247, 0.2);
@@ -123,25 +124,72 @@ body.home-page {
     transform: scale(1.02);
 }
 
-/* Анимация парения */
 @keyframes float {
-    0% { transform: translateY(0px); }
+    0%, 100% { transform: translateY(0px); }
     50% { transform: translateY(-15px); }
-    100% { transform: translateY(0px); }
 }
 
-/* Адаптация */
-@media (max-width: 1100px) {
-    .home-container { 
-        flex-direction: column; 
-        justify-content: center; 
-        padding: 40px; 
-        text-align: center; 
-        overflow-y: auto; 
+/* --- 6 УРОВНЕЙ АДАПТАЦИИ --- */
+
+/* 2. Ноутбуки (1025px - 1439px) */
+@media (max-width: 1439px) {
+    .home-container { padding: 0 40px; }
+    .main-title { font-size: 40px; }
+    .profile-shot-wrapper img { width: 450px; }
+}
+
+/* 3. Планшеты альбомные (769px - 1024px) */
+@media (max-width: 1024px) {
+    body.home-page { overflow-y: auto; }
+    .home-container {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+        padding: 60px 25px; /* Чуть увеличил боковые отступы */
+        text-align: center;
+        justify-content: center;
+        gap: 35px;
     }
-    .top-line, .register-line { display: none; }
-    .home-right { top: 0; margin-top: 60px; }
-    .home-left { max-width: 100%; margin-bottom: 30px; }
-    .home-btn { width: 100%; max-width: 320px; }
-    .profile-shot-wrapper img { width: 100%; max-width: 300px; }
+    .top-line, .reg-line { display: none; }
+    .home-left { 
+        margin-bottom: 30px; 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+    }
+    /* Увеличиваем заголовок здесь */
+    .main-title { font-size: 38px; } 
+    .home-btn { width: 280px; height: 75px; margin: 0 auto; }
+}
+
+/* 4. Планшеты вертикальные (481px - 768px) */
+@media (max-width: 768px) {
+    .main-title { font-size: 36px; } /* Буквы крупнее */
+    .description { font-size: 1.1em; } /* Текст крупнее */
+    /* КАРТИНКА: Расширяем */
+    .profile-shot-wrapper { width: 90%; max-width: none; }
+    .profile-shot-wrapper img { width: 100%; max-width: none; }
+}
+
+/* 5. Смартфоны (321px - 480px) - САМЫЙ ХОДОВОЙ РАЗМЕР */
+@media (max-width: 480px) {
+    .home-container { padding: 50px 15px; gap: 25px; }
+    .main-title { font-size: 30px; line-height: 1.2; } /* Заметно крупнее */
+    .description { font-size: 1em; padding: 0 10px; }
+    .home-btn { width: 280px; height: 65px; font-size: 18px; }
+    
+    /* КАРТИНКА: На весь экран почти */
+    .profile-shot-wrapper { 
+        width: 100%; 
+        max-width: none; 
+        margin: 0; 
+        padding: 4px; /* Меньше рамка — больше сама картинка */
+    }
+    .profile-shot-wrapper img { width: 100%; }
+}
+
+/* 6. Маленькие смартфоны (до 320px) */
+@media (max-width: 320px) {
+    .main-title { font-size: 26px; }
+    .home-btn { width: 100%; font-size: 16px; }
 }
