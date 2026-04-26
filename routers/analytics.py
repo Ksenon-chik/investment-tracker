@@ -2,9 +2,9 @@ from fastapi import APIRouter, Request, Depends
 from sqlalchemy.orm import Session
 from db.session import get_db
 from fastapi.templating import Jinja2Templates
-from services.deal_service import get_user_deals
+from fastapi.responses import RedirectResponse
+from utils.dependencies import get_current_user
 
-# импорт логики
 from utils.analytics import (
     calculate_stats,
     deals_by_day,
@@ -17,29 +17,24 @@ templates = Jinja2Templates(directory="templates")
 
 
 @router.get("/")
-def analytics_page(request: Request, db: Session = Depends(get_db)):
-    user_id = request.cookies.get("user_id")
-
-    if not user_id:
-        from fastapi.responses import RedirectResponse
+def analytics_page(
+    request: Request, 
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user) # Проверка JWT
+):
+    # редирект токена если невалидный
+    if not current_user:
         return RedirectResponse("/auth-page")
 
-    # Получаем пользователя, чтобы узнать его баланс
-    from services.user_service import get_user_by_id
-    user = get_user_by_id(db, int(user_id))
-    
-    if not user:
-        from fastapi.responses import RedirectResponse
-        return RedirectResponse("/auth-page")
+    # сделки из объекта пользователя
+    deals = current_user.deals 
 
-    deals = user.deals  # Сделки пользователя
-
-    # Расчеты
+    # Расчеты (start_balance текущего юзера)
     stats = calculate_stats(deals)
     week_data = deals_by_day(deals)
     assets_data = asset_distribution(deals)
     
-    chart_data = equity_curve(deals, user.start_balance)
+    chart_data = equity_curve(deals, current_user.start_balance)
 
     return templates.TemplateResponse("analytics.html", {
         "request": request,

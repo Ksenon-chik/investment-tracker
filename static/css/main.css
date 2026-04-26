@@ -21,7 +21,7 @@ body {
     min-height: 100vh;
 }
 
-/* SIDEBAR */
+/* сайдбар */
 .sidebar {
     width: 220px;
     background: var(--card-bg);
@@ -63,18 +63,18 @@ body {
     transition: 0.3s;
 }
 
-/* MAIN CONTENT */
+/*  */
 .main {
     margin-left: 220px; /* Отступ под ширину сайдбара */
     flex: 1;
     padding: 40px;
-    max-width: 100%; /* Убрал жесткое ограничение 1200px для гибкости */
+    max-width: 100%; /* для гибкости интерфейса */
     box-sizing: border-box;
 }
 
 h2 { margin-bottom: 30px; font-weight: 600; letter-spacing: -0.5px; }
 
-/* CARDS & GRIDS */
+/* карточки для данных */
 .card {
     background: var(--card-bg);
     border: 1px solid var(--border-color);
@@ -100,7 +100,7 @@ h2 { margin-bottom: 30px; font-weight: 600; letter-spacing: -0.5px; }
     gap: 24px;
 }
 
-/* СЕТКА ДЛЯ АНАЛИТИКИ */
+/* сетка для аналитики */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -139,7 +139,7 @@ h2 { margin-bottom: 30px; font-weight: 600; letter-spacing: -0.5px; }
     margin-top: 5px;
 }
 
-/* ФОРМЫ И КНОПКИ */
+/* формы и кнопки */
 .form-group { margin-bottom: 15px; }
 
 input {
@@ -177,7 +177,7 @@ input:focus {
     box-shadow: 0 5px 15px rgba(123, 47, 247, 0.4);
 }
 
-/* ИНФО-СТРОКИ (ДЛЯ ПРОФИЛЯ) */
+/* информация в профиле */
 .info-row {
     display: flex;
     justify-content: space-between;
@@ -188,7 +188,7 @@ input:focus {
 .info-label { color: var(--text-muted); }
 .info-value { font-weight: 500; }
 
-/* ПРЕДУПРЕЖДЕНИЯ */
+/* предупреждения */
 .alert {
     padding: 12px;
     border-radius: 10px;
@@ -198,12 +198,12 @@ input:focus {
 .alert-error { background: rgba(255, 77, 77, 0.1); color: #ff4d4d; border: 1px solid #ff4d4d; }
 .alert-success { background: rgba(0, 255, 127, 0.1); color: #00ff7f; border: 1px solid #00ff7f; }
 
-/* ЦВЕТОВЫЕ КЛАССЫ */
+/* цветовые классы */
 .val-profit { color: var(--success); }
 .val-loss { color: var(--danger); }
 .val-accent { color: var(--accent); }
 
-/* СТИЛИ ДЛЯ ТАБЛИЦ */
+/* стили для таблиц */
 select {
     width: 100%;
     padding: 12px 16px;
@@ -246,7 +246,7 @@ tr:hover { background: rgba(123, 47, 247, 0.05); cursor: pointer; }
 .pnl-plus { color: var(--success); font-weight: bold; }
 .pnl-minus { color: var(--danger); font-weight: bold; }
 
-/* СТИЛИ ДЛЯ СТРАНИЦЫ АВТОРИЗАЦИИ */
+/* стили для страницы авторизации */
 .auth-body {
     display: flex;
     justify-content: center;
@@ -298,7 +298,7 @@ tr:hover { background: rgba(123, 47, 247, 0.05); cursor: pointer; }
     margin-bottom: 20px;
 }
 
-/* --- БАЗОВЫЕ ПРАВКИ ДЛЯ МЕНЮ --- */
+/* правки в меню */
 .sidebar a i {
     margin-right: 15px; 
     width: 20px;
@@ -310,7 +310,7 @@ tr:hover { background: rgba(123, 47, 247, 0.05); cursor: pointer; }
     white-space: nowrap;
 }
 
-/* --- ГЛОБАЛЬНАЯ АДАПТАЦИЯ --- */
+/* уровни адаптации */
 
 @media (max-width: 1200px) {
     .main { 
@@ -331,7 +331,7 @@ tr:hover { background: rgba(123, 47, 247, 0.05); cursor: pointer; }
         left: 0;
         height: 100dvh !important;
         z-index: 1000;
-        background: var(--card-bg); /* Убедись, что фон есть, чтобы контент не просвечивал */
+        background: var(--card-bg); /* фон */
     }
 
     .sidebar h3, 
@@ -355,19 +355,19 @@ tr:hover { background: rgba(123, 47, 247, 0.05); cursor: pointer; }
         box-sizing: border-box;
     }
 
-    /* На планшетах графики уже могут идти в один столбец */
+    /* карточки в столбик */
     .grid, .charts-grid, .stats-grid {
         grid-template-columns: 1fr !important;
         gap: 20px !important;
     }
 }
 
-/* Усиленный мобильный режим (теперь от 600px и ниже) */
+/* мобильная адаптация */
 @media (max-width: 600px) {
     h2 { font-size: 20px; margin-top: 10px; }
     
     .main {
-        padding: 15px; /* Уменьшаем отступы контента, чтобы влезло больше данных */
+        padding: 15px; /* уменьшение отступов контента */
     }
 
     .card { 
@@ -377,7 +377,7 @@ tr:hover { background: rgba(123, 47, 247, 0.05); cursor: pointer; }
         box-sizing: border-box;
     }
 
-    /* Принудительно разлепляем все сетки */
+    /* */
     .grid, .stats-grid, .charts-grid {
         display: flex !important;
         flex-direction: column !important;
@@ -385,7 +385,7 @@ tr:hover { background: rgba(123, 47, 247, 0.05); cursor: pointer; }
     }
     
     .chart-container {
-        height: 250px !important; /* Жестко фиксируем высоту графиков */
+        height: 250px !important; /* фиксация высоты графиков */
         margin-top: 10px;
     }
 

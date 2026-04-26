@@ -7,7 +7,7 @@ const textColor = "#777";
 Chart.defaults.color = textColor;
 Chart.defaults.font.family = "'Segoe UI', sans-serif";
 
-// 1. График капитала
+// График капитала
 const ctxProfit = document.getElementById("profitChart");
 if (ctxProfit && window.chartData) {
     new Chart(ctxProfit, {
@@ -20,7 +20,7 @@ if (ctxProfit && window.chartData) {
                 borderColor: purple,
                 backgroundColor: "rgba(123, 47, 247, 0.1)",
                 borderWidth: 3,
-                pointRadius: 4, // Чуть меньше для мобилок
+                pointRadius: 4, // Чуть меньше для мобильных устройств
                 tension: 0.4,
                 fill: true
             }]
@@ -37,7 +37,7 @@ if (ctxProfit && window.chartData) {
     });
 }
 
-// 2. Круговой график активов
+// Круговой график активов
 const ctxAssets = document.getElementById("assetsChart");
 if (ctxAssets && window.assetsData) {
     new Chart(ctxAssets, {
@@ -60,7 +60,7 @@ if (ctxAssets && window.assetsData) {
                     position: 'bottom', 
                     labels: { 
                         color: '#aaa',
-                        boxWidth: 10, // Меньше квадратики — больше места кругу
+                        boxWidth: 10,
                         padding: 10,
                         font: { size: 11 }
                     } 
@@ -71,7 +71,7 @@ if (ctxAssets && window.assetsData) {
     });
 }
 
-// 3. Сделки по дням
+// Сделки по дням
 const ctxWeek = document.getElementById("weekChart");
 if (ctxWeek && window.weekData) {
     const orderedDays = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
@@ -85,10 +85,9 @@ if (ctxWeek && window.weekData) {
                 data: orderedValues,
                 backgroundColor: purple,
                 borderRadius: 8,
-                /* ИЗМЕНЕНИЯ ТУТ: */
-                maxBarThickness: 40, // Ограничиваем максимум, но разрешаем сужаться
-                categoryPercentage: 0.8, // Регулирует ширину группы
-                barPercentage: 0.9,      // Регулирует ширину самого бара
+                maxBarThickness: 40,
+                categoryPercentage: 0.8, // регулировка ширины группы
+                barPercentage: 0.9,      // регулировка ширины самого бара
                 borderWidth: 1,
                 borderColor: "rgba(255, 255, 255, 0.1)"
             }]

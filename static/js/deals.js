@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("edit-comment").value = row.dataset.comment;
             document.getElementById("edit-date").value = row.dataset.date;
 
-            // Динамически меняем URL экшена формы
+            // замена URL формы
             editForm.action = "/deals/update/" + id;
         });
     });

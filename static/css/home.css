@@ -1,4 +1,4 @@
-/* --- БАЗОВЫЙ ДЕСКТОП --- */
+/* десктоп */
 body.home-page {
     overflow: hidden;
     display: block;
@@ -9,7 +9,7 @@ body.home-page {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 100vh; /* На десктопе фиксируем высоту */
+    height: 100vh; /* фиксация высоты на дестопе */
     padding: 0 80px;
     position: relative;
     box-sizing: border-box;
@@ -129,23 +129,23 @@ body.home-page {
     50% { transform: translateY(-15px); }
 }
 
-/* --- 6 УРОВНЕЙ АДАПТАЦИИ --- */
+/* уровни адаптации */
 
-/* 2. Ноутбуки (1025px - 1439px) */
+/* Ноутбуки (1025px - 1439px) */
 @media (max-width: 1439px) {
     .home-container { padding: 0 40px; }
     .main-title { font-size: 40px; }
     .profile-shot-wrapper img { width: 450px; }
 }
 
-/* 3. Планшеты альбомные (769px - 1024px) */
+/* Планшеты альбомные (769px - 1024px) */
 @media (max-width: 1024px) {
     body.home-page { overflow-y: auto; }
     .home-container {
         flex-direction: column;
         height: auto;
         min-height: 100vh;
-        padding: 60px 25px; /* Чуть увеличил боковые отступы */
+        padding: 60px 25px; /* боковые отступы */
         text-align: center;
         justify-content: center;
         gap: 35px;
@@ -157,38 +157,38 @@ body.home-page {
         flex-direction: column; 
         align-items: center; 
     }
-    /* Увеличиваем заголовок здесь */
+    /* Увеличение заголовка */
     .main-title { font-size: 38px; } 
     .home-btn { width: 280px; height: 75px; margin: 0 auto; }
 }
 
-/* 4. Планшеты вертикальные (481px - 768px) */
+/* Планшеты вертикальные (481px - 768px) */
 @media (max-width: 768px) {
     .main-title { font-size: 36px; } /* Буквы крупнее */
     .description { font-size: 1.1em; } /* Текст крупнее */
-    /* КАРТИНКА: Расширяем */
+    /* расширение картинки */
     .profile-shot-wrapper { width: 90%; max-width: none; }
     .profile-shot-wrapper img { width: 100%; max-width: none; }
 }
 
-/* 5. Смартфоны (321px - 480px) - САМЫЙ ХОДОВОЙ РАЗМЕР */
+/* Смартфоны (321px - 480px) */
 @media (max-width: 480px) {
     .home-container { padding: 50px 15px; gap: 25px; }
-    .main-title { font-size: 30px; line-height: 1.2; } /* Заметно крупнее */
+    .main-title { font-size: 30px; line-height: 1.2; } /* крупнее при уменьшении */
     .description { font-size: 1em; padding: 0 10px; }
     .home-btn { width: 280px; height: 65px; font-size: 18px; }
     
-    /* КАРТИНКА: На весь экран почти */
+    /* картинка почти на весь экран */
     .profile-shot-wrapper { 
         width: 100%; 
         max-width: none; 
         margin: 0; 
-        padding: 4px; /* Меньше рамка — больше сама картинка */
+        padding: 4px; /*  */
     }
     .profile-shot-wrapper img { width: 100%; }
 }
 
-/* 6. Маленькие смартфоны (до 320px) */
+/* Маленькие смартфоны (до 320px) */
 @media (max-width: 320px) {
     .main-title { font-size: 26px; }
     .home-btn { width: 100%; font-size: 16px; }

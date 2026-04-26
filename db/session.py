@@ -11,7 +11,7 @@ engine = create_engine(
 )
 
 
-# session
+# сессии
 SessionLocal = sessionmaker(
     autocommit = False,
     autoflush = False,

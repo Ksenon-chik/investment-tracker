@@ -1,55 +1,65 @@
 from fastapi import APIRouter, Depends, Request
 from fastapi.templating import Jinja2Templates
-from services.deal_service import get_user_deals
+from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
+from datetime import datetime
+
 from db.session import get_db
 from utils.dependencies import get_current_user
-from datetime import datetime
-from utils.analytics import equity_curve
 
 router = APIRouter(prefix="/profile", tags=["Profile"])
 
 templates = Jinja2Templates(directory="templates")
 
+
 @router.get("/")
-def profile_page(request: Request, db: Session = Depends(get_db)):
-    # 1. Берем ID из куки, как это делал main.py
-    user_id = request.cookies.get("user_id")
-    
-    if not user_id:
-        from fastapi.responses import RedirectResponse
+def profile_page(
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    # проверка авторизован ли пользователь
+    if not current_user:
         return RedirectResponse("/auth-page")
 
-    # 2. Получаем объект пользователя
-    from services.user_service import get_user_by_id
-    user = get_user_by_id(db, int(user_id))
-    
-    if not user:
-        from fastapi.responses import RedirectResponse
-        return RedirectResponse("/auth-page")
+    user = current_user
 
-    # 3. Дальше твой код графика БЕЗ ИЗМЕНЕНИЙ
-    deals = user.deals # или get_user_deals(db, user.id)
-    
-    start_balance = float(user.start_balance or 100.0)
+    # сделки пользователя
+    deals = user.deals
+
+    # стартовый баланс
+    start_balance = float(user.start_balance or 0)
     current_cumulative = start_balance
-    
-    final_chart_data = []
-    final_chart_data.append({"date": "Старт", "balance": round(current_cumulative, 2)})
 
-    # Сортируем сделки
-    sorted_deals = sorted(deals, key=lambda x: x.date if x.date else datetime.now())
-    
+    # график
+    final_chart_data = []
+    final_chart_data.append({
+        "date": "Старт",
+        "balance": round(current_cumulative, 2)
+    })
+
+    # сортировка сделок
+    sorted_deals = sorted(
+        deals,
+        key=lambda x: x.date if x.date else datetime.now()
+    )
+
+    # подсчет капитала
     for d in sorted_deals:
         pnl = float(d.profit or 0)
         current_cumulative += pnl
+
         final_chart_data.append({
             "date": d.date.strftime("%d.%m") if d.date else "??",
             "balance": round(current_cumulative, 2)
         })
 
+    # если нет сделок
     if len(final_chart_data) == 1:
-        final_chart_data.append({"date": "Сегодня", "balance": round(current_cumulative, 2)})
+        final_chart_data.append({
+            "date": "Сегодня",
+            "balance": round(current_cumulative, 2)
+        })
 
     return templates.TemplateResponse("profile.html", {
         "request": request,

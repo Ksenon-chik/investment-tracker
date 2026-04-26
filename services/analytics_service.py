@@ -75,7 +75,7 @@ def get_full_analytics(db: Session, user_id: int):
     trades_by_day = defaultdict(int)
 
     for deal in deals:
-        # ---- PROFIT / LOSS ----
+        # профит или убыток
         if deal.result == "profit":
             total_profit += deal.amount
             profitable_trades += 1
@@ -85,30 +85,30 @@ def get_full_analytics(db: Session, user_id: int):
             total_loss += deal.amount
             cumulative_profit -= deal.amount
 
-        # ---- ГРАФИК ПРИБЫЛИ ----
+        # график прибыли
         profit_history.append({
             "date": str(deal.date),
             "profit": cumulative_profit
         })
 
-        # ---- АКТИВЫ ----
+        # активы
         asset = deal.asset
         asset_stats[asset] = asset_stats.get(asset, 0) + 1
 
-        # ---- ДНИ НЕДЕЛИ ----
+        # дни недели
         day = deal.date.strftime("%A")
         trades_by_day[day] += 1
 
-    # ---- WINRATE ----
+    # соотношение прибыльных сделок
     winrate = (profitable_trades / total_trades * 100) if total_trades > 0 else 0
 
-    # ---- РАСПРЕДЕЛЕНИЕ АКТИВОВ ----
+    # распределение активов
     asset_distribution = {}
     if total_trades > 0:
         for asset, count in asset_stats.items():
             asset_distribution[asset] = round((count / total_trades) * 100, 2)
 
-    # ---- СОРТИРОВКА ДНЕЙ ----
+    # сортировка дней
     days_order = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
     sorted_trades_by_day = {day: trades_by_day.get(day, 0) for day in days_order}
 

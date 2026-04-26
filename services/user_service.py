@@ -50,11 +50,11 @@ def change_password(db: Session, user_id: int, old_password: str, new_password: 
     if not verify_password(old_password, user.hashed_password):
         raise ValueError("Неверный старый пароль")
 
-    # можно добавить валидацию нового пароля
+    # валидация нового пароля
     if len(new_password) < 6:
         raise ValueError("Пароль должен быть минимум 6 символов")
 
-    # обновляем пароль
+    # обновление пароля
     user.hashed_password = hash_password(new_password)
 
     db.commit()

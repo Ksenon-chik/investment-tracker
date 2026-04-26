@@ -68,20 +68,20 @@ def equity_curve(deals, start_balance):
     balance = float(start_balance)
     chart = []
     
-    # Сортируем сделки по дате
+    # сортировка сделки по дате
     sorted_deals = sorted(
         [d for d in deals if getattr(d, "date", None)], 
         key=lambda x: x.date
     )
     
-    # Добавляем первую точку (баланс при регистрации)
+    # баланс при регистрации
     chart.append({
         "date": "Старт", 
         "balance": round(balance, 2)
     })
 
     for d in sorted_deals:
-        # Берем готовый профит из базы (как в профиле)
+        # готовый профит из базы (как в профиле)
         pnl = float(getattr(d, "profit", 0) or 0)
         balance += pnl
 
@@ -90,7 +90,7 @@ def equity_curve(deals, start_balance):
             "balance": round(balance, 2)
         })
 
-    # Если сделок еще нет, рисуем прямую линию от старта
+    # Если сделок еще нет, рисуется прямая линия от старта
     if len(chart) == 1:
         chart.append({"date": "Сегодня", "balance": round(balance, 2)})
 

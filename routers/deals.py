@@ -8,29 +8,28 @@ from db.session import get_db
 from models.deal import Deal
 from services.deal_service import get_user_deals
 from utils.calculations import calculate_profit
+from utils.dependencies import get_current_user
 
 router = APIRouter(prefix="/deals", tags=["Deals"])
 templates = Jinja2Templates(directory="templates")
 
 
 @router.get("/", response_class=HTMLResponse)
-def deals_page(request: Request, db: Session = Depends(get_db)):
-    user_id = request.cookies.get("user_id")
-
-    if not user_id:
+def deals_page(
+    request: Request, 
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user) # JWT токен
+):
+    if not current_user:
         return RedirectResponse("/auth-page")
 
-    deals = get_user_deals(db, int(user_id))
+    # ID токена
+    deals = get_user_deals(db, current_user.id)
 
     return templates.TemplateResponse("deals.html", {
         "request": request,
         "deals": deals
     })
-
-
-from datetime import datetime
-from fastapi import Form, Depends, Request
-from fastapi.responses import RedirectResponse
 
 @router.post("/create")
 def create_deal(
@@ -41,24 +40,22 @@ def create_deal(
     entry_price: str = Form(""),
     exit_price: str = Form(""),
     date: str = Form(""),
-    
-    timeframe: str = Form(""),   # optional
-    comment: str = Form(""),     # optional
-    db: Session = Depends(get_db)
+    timeframe: str = Form(""),
+    comment: str = Form(""),
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user) # текущий юзер
 ):
-    user_id = request.cookies.get("user_id")
-
-    if not user_id:
+    if not current_user:
         return RedirectResponse("/auth-page", status_code=303)
 
-    # ✅ ПРОВЕРКА ПУСТЫХ ПОЛЕЙ (ТОЛЬКО ОБЯЗАТЕЛЬНЫЕ)
+    # проверка обязательных полей
     if not asset or not direction or not amount or not entry_price or not exit_price or not date:
         return RedirectResponse(
             "/deals?error=Заполни обязательные поля",
             status_code=303
         )
 
-    # ✅ ПРОВЕРКА ЧИСЕЛ
+    # проверка значений
     try:
         amount = float(amount)
         entry_price = float(entry_price)
@@ -81,7 +78,7 @@ def create_deal(
             status_code=303
         )
 
-    # ✅ ПРОВЕРКА ДАТЫ
+    # проверка даты
     try:
         date_obj = datetime.strptime(date, "%Y-%m-%d").date()
     except:
@@ -90,20 +87,20 @@ def create_deal(
             status_code=303
         )
 
-    # ✅ PROFIT
+    # профит
     profit = calculate_profit(direction, entry_price, exit_price, amount)
 
-    # ✅ СОЗДАНИЕ
+    # создание
     deal = Deal(
-        user_id=int(user_id),
+        user_id=current_user.id,
         asset=asset.strip(),
         direction=direction,
         amount=amount,
         entry_price=entry_price,
         exit_price=exit_price,
         profit=profit,
-        timeframe=timeframe.strip() if timeframe else None,  # optional
-        comment=comment.strip() if comment else None,        # optional
+        timeframe=timeframe.strip() if timeframe else None,  # опционально
+        comment=comment.strip() if comment else None,        # опционально
         date=date_obj
     )
 
@@ -117,11 +114,10 @@ def create_deal(
 def delete_selected(
     request: Request,
     deal_id: int = Form(None),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
 ):
-    user_id = request.cookies.get("user_id")
-
-    if not user_id:
+    if not current_user: # проверка токена
         return RedirectResponse("/auth-page")
 
     if not deal_id:
@@ -130,9 +126,10 @@ def delete_selected(
             status_code=303
         )
 
+    # current_user.id
     deal = db.query(Deal).filter(
         Deal.id == deal_id,
-        Deal.user_id == int(user_id)
+        Deal.user_id == current_user.id
     ).first()
 
     if deal:
@@ -154,16 +151,16 @@ def update_deal(
     date: str = Form(None),
     timeframe: str = Form(None),
     comment: str = Form(None),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
 ):
-    user_id = request.cookies.get("user_id")
-
-    if not user_id:
+    if not current_user: # Проверка токена
         return RedirectResponse("/auth-page")
 
+    # Поиск сделки через current_user.id
     deal = db.query(Deal).filter(
         Deal.id == deal_id,
-        Deal.user_id == int(user_id)
+        Deal.user_id == current_user.id
     ).first()
 
     if not deal:
