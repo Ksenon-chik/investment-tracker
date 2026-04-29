@@ -156,6 +156,10 @@ def update_deal(
 ):
     if not current_user: # Проверка токена
         return RedirectResponse("/auth-page")
+    
+    # Проверка выбора сделки
+    if not deal_id:
+        return RedirectResponse("/deal&error = Сделка не выбрана", status_code=303)
 
     # Поиск сделки через current_user.id
     deal = db.query(Deal).filter(
@@ -164,7 +168,7 @@ def update_deal(
     ).first()
 
     if not deal:
-        return RedirectResponse("/deals")
+        return RedirectResponse("/deals&error = Сделка не найдена", status_code=303)
 
     if not all([asset, direction, amount, entry_price, exit_price, date]):
         return RedirectResponse(

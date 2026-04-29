@@ -298,6 +298,32 @@ tr:hover { background: rgba(123, 47, 247, 0.05); cursor: pointer; }
     margin-bottom: 20px;
 }
 
+.notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+}
+
+.notification {
+    background: var(--card-bg);
+    color: white;
+    padding: 15px 25px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    border-left: 4px solid var(--accent);
+    animation: slideIn 0.3s ease-out;
+}
+
+.notification.error { border-left-color: #ff4444; }
+.notification.success { border-left-color: #00C851; }
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
 /* правки в меню */
 .sidebar a i {
     margin-right: 15px; 
