@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    container_name: first_container_investment_tracker_app
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONUNBUFFERED=1
