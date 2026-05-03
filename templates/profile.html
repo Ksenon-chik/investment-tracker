@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Профиль | Investment Tracker</title>
-    <link rel="stylesheet" href="{{ url_for('static', path='/css/main.css') }}">
+    <link rel="stylesheet" href="/static/css/main.css">
 </head>
 <body>
 
@@ -102,10 +102,9 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // передача данных из Jinja в JS
     window.profileChartData = {{ chart_data | tojson | safe }};
 </script>
-<script src="{{ url_for('static', path='/js/profile.js') }}"></script>
+<script src="/static/js/profile.js"></script>
 
 </body>
 </html>
