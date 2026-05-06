@@ -1,5 +1,7 @@
+import csv
+from io import BytesIO, TextIOWrapper
 from fastapi import APIRouter, Depends, Form, Request
-from fastapi.responses import RedirectResponse, HTMLResponse
+from fastapi.responses import RedirectResponse, HTMLResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from datetime import datetime
@@ -189,3 +191,49 @@ def update_deal(
     db.commit()
 
     return RedirectResponse("/deals", status_code=303)
+
+
+@router.get("/export")
+def export_deals(
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    if not current_user:
+        return RedirectResponse("/auth-page")
+
+    # Получение всех сделок пользователя
+    deals = db.query(Deal).filter(Deal.user_id == current_user.id).all()
+
+    # Создание CSV в памяти
+    output = BytesIO()
+
+    wrapper = TextIOWrapper(output, encoding='utf-8-sig', write_through=True)
+
+    # wrapper.write('sep=;\n')
+
+    writer = csv.writer(wrapper, delimiter=';')
+    
+    # Заголовки таблицы
+    writer.writerow(['Дата', 'Актив', 'Направление', 'Объем', 'Вход', 'Выход', 'Профит', 'TF', 'Комментарий'])
+    
+    # Данные
+    for d in deals:
+        writer.writerow([
+            d.date,
+            d.asset,
+            d.direction,
+            str(d.amount).replace('.', ','),
+            str(d.entry_price).replace('.', ','),
+            str(d.exit_price).replace('.', ','),
+            str(d.profit).replace('.', ','),
+            d.timeframe or '',
+            d.comment or ''
+        ])
+    
+    output.seek(0)
+    
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": "attachment; filename=my_deals.csv"}
+    )

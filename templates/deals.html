@@ -35,7 +35,13 @@
 </div>
 
 <div class="main">
-    <h2>Сделки</h2>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2>Сделки</h2>
+        <a href="/deals/export" class="btn" style="background: #28a745; text-decoration: none; display: inline-block; width: auto; padding: 10px 20px;">
+            <i class="fa-solid fa-file-csv"></i> Экспорт в CSV
+        </a>
+    </div>
 
     <div class="grid" style="grid-template-columns: 1fr 1fr;">
         <div class="card">
@@ -118,6 +124,7 @@
                         <th>Выход</th>
                         <th>Объем</th>
                         <th>TF</th>
+                        <th>Комментарий</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -143,6 +150,7 @@
                         <td>{{ deal.exit_price }}</td>
                         <td>{{ deal.amount }}</td>
                         <td>{{ deal.timeframe }}</td>
+                        <td>{{ deal.comment }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
