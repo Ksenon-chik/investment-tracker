@@ -4,7 +4,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const selectedIdInput = document.getElementById("selected-id");
     const notificationContainer = document.getElementById("notification-container");
 
-    // Функция для показа уведомлений
     function showToast(message, type = 'error') {
         const toast = document.createElement("div");
         toast.className = `notification ${type}`;
@@ -27,7 +26,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const id = row.dataset.id;
             selectedIdInput.value = id;
             
-            // Заполнение полей
             document.getElementById("edit-asset").value = row.dataset.asset;
             document.getElementById("edit-direction").value = row.dataset.direction;
             document.getElementById("edit-amount").value = row.dataset.amount;
@@ -41,15 +39,23 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Валидация редактирования
     editForm.addEventListener('submit', (event) => {
         if (!selectedIdInput.value) {
             event.preventDefault();
             showToast('Сначала выберите сделку в таблице');
+            return;
+        }
+
+        const amountInput = document.getElementById("edit-amount");
+        const amountValue = parseFloat(amountInput.value);
+
+        if (isNaN(amountValue) || amountValue <= 0) {
+            event.preventDefault(); // Останавливаем отправку формы
+            showToast('Объем сделки должен быть больше 0');
+            return; // Выходим из функции
         }
     });
 
-    // предупреждение перед удалением
     deleteForm.addEventListener('submit', (event) => {
         if (!selectedIdInput.value) {
             event.preventDefault();

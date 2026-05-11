@@ -1,4 +1,3 @@
-// static/js/auth.js
 function showLogin() {
     document.getElementById("login-form").style.display = "block";
     document.getElementById("register-form").style.display = "none";
@@ -13,24 +12,43 @@ function showRegister() {
     document.getElementById("register-tab").classList.add("active");
 }
 
-function validateRegister() {
-    const pass = document.getElementById("reg-password").value;
-    const confirm = document.getElementById("reg-confirm").value;
-    const balance = document.getElementById("start-balance").value;
+async function handleRegister(event) {
+    event.preventDefault();
+    const form = event.target;
+    const errorDiv = document.getElementById("js-error-msg");
+    errorDiv.style.display = "none";
 
-    if (pass.length < 6) {
-        alert("Пароль должен быть минимум 6 символов");
-        return false;
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+
+    if (data.password !== data.confirm_password) {
+        errorDiv.innerText = "Пароли не совпадают";
+        errorDiv.style.display = "block";
+        return;
     }
-    if (pass !== confirm) {
-        alert("Пароли не совпадают");
-        return false;
+
+    data.start_balance = parseFloat(data.start_balance);
+    delete data.confirm_password;
+
+    try {
+        const response = await fetch(form.action, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            window.location.href = "/profile";
+        } else {
+            errorDiv.innerText = result.detail;
+            errorDiv.style.display = "block";
+        }
+    } catch (err) {
+        errorDiv.innerText = "Ошибка сервера";
+        errorDiv.style.display = "block";
     }
-    if (!balance || balance <= 0) {
-        alert("Начальный баланс должен быть больше 0");
-        return false;
-    }
-    return true;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -39,5 +57,10 @@ document.addEventListener("DOMContentLoaded", () => {
         showRegister();
     } else {
         showLogin();
+    }
+
+    const regForm = document.getElementById("register-form");
+    if (regForm) {
+        regForm.onsubmit = handleRegister;
     }
 });

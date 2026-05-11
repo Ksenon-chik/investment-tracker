@@ -16,8 +16,10 @@
         <div class="tab" id="register-tab" onclick="showRegister()">Регистрация</div>
     </div>
 
+    <div id="js-error-msg" style="display:none; color:red; text-align:center; margin-bottom: 15px; font-size: 0.9em;"></div>
+
     {% if request.query_params.get("error") %}
-        <div class="error-msg">{{ request.query_params.get("error") }}</div>
+        <div class="error-msg" style="color:red; text-align:center; margin-bottom: 15px;">{{ request.query_params.get("error") }}</div>
     {% endif %}
 
     <form id="login-form" method="post" action="/auth/login-form">
@@ -30,7 +32,7 @@
         <button class="btn">Войти</button>
     </form>
 
-    <form id="register-form" method="post" action="/auth/register" style="display:none;" onsubmit="return validateRegister()">
+    <form id="register-form" action="/auth/register" style="display:none;">
         <div class="form-group">
             <input name="email" type="email" placeholder="Email" required>
         </div>
@@ -43,7 +45,7 @@
         <div class="form-group">
             <input type="number" step="any" id="start-balance" name="start_balance" placeholder="Начальный баланс" required>
         </div>
-        <button class="btn">Создать аккаунт</button>
+        <button type="submit" class="btn">Создать аккаунт</button>
     </form>
 </div>
 
