@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, field_validator
+from pydantic import BaseModel, EmailStr, field_validator, Field
 from datetime import datetime
 import re
 
@@ -8,7 +8,7 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     email: str
     password: str
-    start_balance: float
+    start_balance: float = Field(ge=0)
 
     @field_validator("password")
     def validator_password(cls, value):

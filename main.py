@@ -15,6 +15,9 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     msg = err.get("msg")
     clean_msg = msg.split("Value error, ")[-1]
     
+    if "greater than or equal to 0" in clean_msg.lower():
+        clean_msg = "Начальный баланс должен быть больше или равен 0"
+
     if "field required" in clean_msg.lower():
         field = err.get("loc")[-1]
         fields = {"email": "Email", "password": "Пароль", "start_balance": "Начальный баланс"}
